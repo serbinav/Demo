@@ -1,8 +1,5 @@
 package ru.org.autotest;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -18,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import java.util.logging.Logger;
 
-public class FirstTest {
+public class FirstProgs {
 
 //    private static String SOME_STRING_VALUE;
 
@@ -26,7 +23,7 @@ public class FirstTest {
     private static Logger log;
 
 
-    @BeforeClass
+    //@BeforeClass
     public static void setup() {
 
         //System.out.println(System.getProperty("user.dir"));
@@ -67,7 +64,7 @@ public class FirstTest {
     }
 
 
-    @Test
+    //@Test
     public void userCreate() {
         //если мы регаемся такой элемент 1
         //div[@class='field field--large field--filled']//input[@name='email']
@@ -112,7 +109,7 @@ public class FirstTest {
         driver.navigate().refresh();
     }
 
-    @Test
+    //@Test
     public void userLogin() {
 //        log.log(Level.INFO, "test");
 
@@ -136,13 +133,8 @@ public class FirstTest {
 //        Assert.assertEquals("autotestorgua@ukr.net", mailUser);
 
         // TODO так себе работает, пока воткну обычный слип и еще почитаю
-        WebDriverWait wait = new WebDriverWait(driver, 10);
-        wait.until(ExpectedConditions.elementToBeSelected(
-                By.xpath("//h1[@class='settings-page__title']")));
-
-        //driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        //WebElement dynamicWait =
-        //        driver.findElement(By.xpath("//h1[@class='settings-page__title']"));
+        WebElement dynamicWait = (new WebDriverWait(driver, 15))
+                .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h1[@class='settings-page__title']")));
 
 //        driver.manage().deleteCookie(arg0);
 //        driver.manage().deleteCookieNamed(arg0);
@@ -151,7 +143,7 @@ public class FirstTest {
     }
 
 
-    @AfterClass
+    //@AfterClass
     public static void tearDown() {
         driver.quit();
     }
