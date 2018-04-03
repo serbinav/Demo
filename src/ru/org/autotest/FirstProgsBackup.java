@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import java.util.logging.Logger;
 
-public class FirstProgs {
+public class FirstProgsBackup {
 
 //    private static String SOME_STRING_VALUE;
 
@@ -28,7 +28,6 @@ public class FirstProgs {
 
         //System.out.println(System.getProperty("user.dir"));
 
-        // TODO возможно нужно подключить Logger какой-нибудь
 //        //https://habrahabr.ru/post/247647/
 //        log = Logger.getLogger("FirstTest");
 //        try {
@@ -48,7 +47,6 @@ public class FirstProgs {
 
         System.setProperty(props.getProperty("driver_name"), props.getProperty("driver_path"));
 
-        // TODO подумать над моментом замены драйвера
         // driver = new OperaDriver();
 
         //глобальное высталение свойств не помогает
@@ -70,7 +68,6 @@ public class FirstProgs {
         //div[@class='field field--large field--filled']//input[@name='email']
 
 
-        // TODO так себе работает, пока воткну обычный слип и еще почитаю
         //WebElement dynamicWait = (new WebDriverWait(driver, 10))
         //        .until(ExpectedConditions.presenceOfElementLocated(
         //                By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//p[last()]//a")
@@ -132,7 +129,6 @@ public class FirstProgs {
 //        String mailUser = profileUser.getText();
 //        Assert.assertEquals("autotestorgua@ukr.net", mailUser);
 
-        // TODO так себе работает, пока воткну обычный слип и еще почитаю
         WebElement dynamicWait = (new WebDriverWait(driver, 15))
                 .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h1[@class='settings-page__title']")));
 
