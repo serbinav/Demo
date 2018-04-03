@@ -1,0 +1,2 @@
+# use custom merger if it is defined in any .gitconfig file
+messages*.properties*	merge=messages-properties-merger
