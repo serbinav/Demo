@@ -1,9 +1,12 @@
 package ru.org.autotest;
 
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.WebDriverRunner;
+import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
 
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -18,6 +21,7 @@ import java.util.Random;
 import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.WebDriverRunner.clearBrowserCache;
+import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
 /**
  * Created by makenshi on 4/3/18.
@@ -102,38 +106,11 @@ public class FirstTestSelenide {
         return Example.replaceAll("@", randomPart+"@");
     }
 
-    protected void setClipboardContents(String aString){
-        StringSelection stringSelection = new StringSelection(aString);
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clipboard.setContents(stringSelection, clipboardSlave);
-    }
-
-    protected String getClipboardContents() {
-        String result = "";
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        //odd: the Object param of getContents is not currently used
-        Transferable contents = clipboard.getContents(null);
-        boolean hasTransferableText =
-                (contents != null) &&
-                        contents.isDataFlavorSupported(DataFlavor.stringFlavor)
-                ;
-        if (hasTransferableText) {
-            try {
-                result = (String)contents.getTransferData(DataFlavor.stringFlavor);
-            }
-            catch (UnsupportedFlavorException | IOException ex){
-                System.out.println(ex);
-                ex.printStackTrace();
-            }
-        }
-        return result;
-    }
-
-
     @Test(enabled = false)
     public void userLogin() {
         open("/");
-        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(visible);
+        
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).shouldBe(visible);
 
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']"))
                 .val(test.getProperty("account_exist_email"));
@@ -157,7 +134,7 @@ public class FirstTestSelenide {
     @Test
     public void userLoginBubbleEmailEmpty() {
         open("/");
-        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(visible);
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).shouldBe(visible);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).click();
 
         Assert.assertEquals(
@@ -168,7 +145,7 @@ public class FirstTestSelenide {
     @Test
     public void userLoginBubblePasswordEmpty() {
         open("/");
-        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(visible);
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).shouldBe(visible);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).setValue(
                 getRandomEmail(Integer.parseInt(test.getProperty("email_random_lenght")),test.getProperty("email_template")));
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).click();
@@ -180,7 +157,7 @@ public class FirstTestSelenide {
     @Test
     public void userLoginBubbleNoAssociatedAcc() {
         open("/");
-        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(visible);
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).shouldBe(visible);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).setValue(
                 getRandomEmail(Integer.parseInt(test.getProperty("email_random_lenght")),test.getProperty("email_template")));
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='password']")).setValue(
@@ -194,7 +171,7 @@ public class FirstTestSelenide {
     @Test
     public void userLoginBubbleNoCorrectPass() {
         open("/");
-        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(visible);
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).shouldBe(visible);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).setValue(
                 test.getProperty("account_exist_email"));
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='password']")).setValue(
@@ -208,7 +185,7 @@ public class FirstTestSelenide {
     @Test
     public void userLoginBubbleVeryLongMail() {
         open("/");
-        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(visible);
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).shouldBe(visible);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).setValue(
         getRandomEmail(Integer.parseInt(test.getProperty("very_longe_mail"))-test.getProperty("email_template").length(),
                 test.getProperty("email_template")));
@@ -223,7 +200,7 @@ public class FirstTestSelenide {
     @Test
     public void userLoginBubbleMailRandomString() {
         open("/");
-        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(visible);
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).shouldBe(visible);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).setValue(
                 getRandomString(Integer.parseInt(test.getProperty("email_random_lenght"))));
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='password']")).setValue(
@@ -237,7 +214,7 @@ public class FirstTestSelenide {
     @Test
     public void userLoginBubbleEnter() {
         open("/");
-        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(visible);
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).shouldBe(visible);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).pressEnter();
 
         Assert.assertEquals(
@@ -248,7 +225,7 @@ public class FirstTestSelenide {
     @Test
     public void userLoginBubbleEsc() {
         open("/");
-        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(visible);
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).shouldBe(visible);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).click();
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).pressEscape();
         Assert.assertEquals(
@@ -256,17 +233,49 @@ public class FirstTestSelenide {
                         .exists(), false);
     }
 
-    @Test(enabled = false)
+    @Test
     public void userLoginBubbleTab() {
         open("/");
-        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(visible);
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).setValue(
-                test.getProperty("account_exist_email")).pressTab();
-        sleep(5000);
-        //$(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='password']"))
-        Assert.assertEquals(getFocusedElement().getTagName(),
-                 "//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='password']");
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).shouldBe(visible);
+        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).pressTab();
 
+        Assert.assertEquals($(By.xpath(
+                "//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//div[@class='field field--large field--focus']" +
+                        "//input[@type='password']")).exists(), true);
+    }
+
+    @Test
+    public void userLoginBubbleBorder() {
+        open("/");
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).shouldBe(visible);
+        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).click();
+        $(By.xpath("//div[@class='field field--large field--focus']")).exists();
+        Assert.assertEquals($(By.xpath(
+                "//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//div[@class='field field--large field--focus']" +
+                        "//input[@name='email']")).exists(), true);
+    }
+
+    @Test (enabled = false)
+    public void userLoginBubbleContextMenu() {
+        open("/");
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).shouldBe(visible);
+        //$(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).contextClick().getText();
+        SelenideElement menu = $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']"));
+        //menu.contextClick().sendKeys(Keys.ARROW_DOWN);
+        //menu.sendKeys(Keys.ARROW_DOWN);
+        //menu.sendKeys(Keys.ENTER);
+        sleep(2000);
+        WebElement R1 = getWebDriver().findElement(
+                By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']"));
+        Actions builder = new Actions(getWebDriver());
+        builder.contextClick(R1).sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ARROW_DOWN)
+                .sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ESCAPE).build().perform();
+                //sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ENTER).
+                //build().perform();
+                //.sendKeys(Keys.ENTER)
+        //action.contextClick(productLink).sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.RETURN).build().perform();
+        sleep(5000);
+        //System.out.println()
     }
 
     @AfterClass
