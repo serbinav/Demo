@@ -135,6 +135,7 @@ public class TestSelenideTemporaryDeprecated {
     @Test(enabled = false)
     public void userCreate() {
         open("/");
+        try{
         $(By.xpath(anchor.getProperty("Login1"))).shouldBe(visible);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//p[last()]//a")).click();
 
@@ -170,9 +171,12 @@ public class TestSelenideTemporaryDeprecated {
 
         $(By.xpath("//a[@class='gwt-Anchor btn btn-default btn-medium delete-account-button']")).click();
         $(By.xpath("//div[@class='main-popup__container']//button[@class='btn btn-medium btn-primary']")).click();
-
-        open("/");
-        // TODO если тест упал надо удалять все куки и делать рефреш, переходить на дефолтный урл
+        }
+        finally {
+            // TODO возможно данный вариант выхода из аккаунта "как из пушки по воробьям" и нужно конкретизировать
+            clearBrowserCache();
+            // TODO если тест упал надо удалять все куки и делать рефреш
+        }
     }
 
     @Test(enabled = false)
