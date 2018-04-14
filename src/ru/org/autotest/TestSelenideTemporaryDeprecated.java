@@ -1,8 +1,12 @@
 package ru.org.autotest;
 
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -20,6 +24,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.WebDriverRunner.clearBrowserCache;
+import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
 /**
  * Created by makenshi on 4/9/18.
@@ -291,6 +296,31 @@ public class TestSelenideTemporaryDeprecated {
         //TODO если тест пройдет то мы зарегистрируем аккаунт, но пока тут баг
         clearBrowserCache();
     }
+
+
+
+    @Test (enabled = false)
+    public void userLoginBubbleContextMenu() {
+        open("/");
+        // подправил ожидание на 10 секунд
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(visible,10000);
+        //$(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).contextClick().getText();
+        SelenideElement menu = $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']"));
+        //menu.contextClick().sendKeys(Keys.ARROW_DOWN);
+        //menu.sendKeys(Keys.ARROW_DOWN);
+        //menu.sendKeys(Keys.ENTER);
+        WebElement R1 = getWebDriver().findElement(
+                By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']"));
+        Actions builder = new Actions(getWebDriver());
+        builder.contextClick(R1).sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ARROW_DOWN)
+                .sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ESCAPE).build().perform();
+        //sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ENTER).
+        //build().perform();
+        //.sendKeys(Keys.ENTER)
+        //action.contextClick(productLink).sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.RETURN).build().perform();
+        //System.out.println()
+    }
+
     @AfterClass
     public void clearCache() {
         clearBrowserCache();
