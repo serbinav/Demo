@@ -22,11 +22,10 @@ import static com.codeborne.selenide.WebDriverRunner.clearBrowserCache;
 public class FirstTestSelenide {
 
     private static Properties test;
-    private static Properties anchor;
     private static TestUtils utils;
 
     @BeforeClass
-    public static void setup() {
+    public static void setUp() {
         utils = new TestUtils();
         Properties prop = new PropertiesStream("config/properties.ini","UTF-8").getProperties();
 
@@ -34,11 +33,10 @@ public class FirstTestSelenide {
         Configuration.browser = prop.getProperty("browser_name");
 
         test = new PropertiesStream("config/test.ini","UTF-8").getProperties();
-        anchor = new PropertiesStream("config/anchor.ini","UTF-8").getProperties();
     }
 
     //TODO подумать над тем что некоторые тесты могут падать при условии что аккаунты не зареганы
-    // 8 из 24
+    // 8 из 26
     //-----------------------------------------------------------------------------------------------------------------------------
 
     @DataProvider
@@ -258,8 +256,68 @@ public class FirstTestSelenide {
                         .shouldBe(visible).getText(), test.getProperty("email"));
     }
 
+    //-----------------------------------------------------------------------------------------------------------------------------
+    @Test
+    public void userLoginBrowserRefresh() {
+        open("/");
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(visible, 10000);
+
+        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).
+                setValue(test.getProperty("account_exist_email"));
+        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='password']")).
+                setValue(test.getProperty("account_exist_password"));
+        refresh();
+        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).click();
+        Assert.assertEquals(
+                $(By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']//div[@class='gwt-HTML']"))
+                        .shouldBe(visible).getText(), test.getProperty("email"));
+    }
+
+    @Test
+    public void userLoginBrowserNewWindow() {
+        open("/");
+        try{
+            $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(visible,10000);
+
+            $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']"))
+                    .val(test.getProperty("account_exist_email"));
+
+            $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='password']"))
+                    .val(test.getProperty("account_exist_password"));
+
+            $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).click();
+
+            $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(appear,10000);
+            $(By.xpath("//div[@class='menu']")).shouldBe(visible);
+            $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(visible);
+
+            executeJavaScript("window.open('"+WebDriverRunner.url()+"','/');");
+            switchTo().window(1);
+            $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(appear,10000);
+            $(By.xpath("//div[@class='menu']")).shouldBe(visible);
+            Assert.assertEquals(
+                    $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(visible).exists(),true);
+
+//TODO закрывать вторую вкладку
+        }
+        finally {
+            //TODO еще подумать, но этот вариант рабочий
+            clearBrowserCache();
+        }
+    }
+
     @AfterClass
-    public void clearCache() {
+    public void tearDown() {
         clearBrowserCache();
+    }
+
+    @Test(enabled = false)
+    public void userLoginBrowserPasswordRecovery() {
+//        switchTo().window(newWindow);
+//        System.out.println("New window title: " + WebDriverRunner.url());
+//        switchTo().window(originalWindow);
+//        System.out.println("Old window title: " + WebDriverRunner.url());
+//        ExecuteScript("window.open('your url','_blank');");
+//        executeJavaScript("alert('"+WebDriverRunner.url()+"');");
     }
 }

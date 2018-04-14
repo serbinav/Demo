@@ -1,4 +1,4 @@
-package ru.org.autotest;
+package com.demo.testcase;
 
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.SelenideElement;
@@ -53,7 +53,7 @@ public class TestSelenideTemporaryDeprecated {
         InputStreamReader reader = null;
         try {
             try {
-                stream = new FileInputStream(new File("config/test.ini"));
+                stream = new FileInputStream(new File("config/test_create.ini"));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
