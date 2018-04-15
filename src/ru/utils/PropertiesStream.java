@@ -1,4 +1,4 @@
-package ru.org.autotest;
+package ru.utils;
 
 import java.io.*;
 import java.util.Properties;
@@ -13,7 +13,7 @@ public class PropertiesStream {
     protected InputStream stream = null;
     protected InputStreamReader reader = null;
 
-    PropertiesStream(String path, String charset) {
+    public PropertiesStream(String path, String charset) {
         callback = new Properties();
 
         try {

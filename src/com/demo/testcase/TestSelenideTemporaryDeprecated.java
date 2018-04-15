@@ -1,5 +1,6 @@
 package com.demo.testcase;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
@@ -18,13 +19,11 @@ import java.io.*;
 import java.util.Properties;
 import java.util.Random;
 
-import static com.codeborne.selenide.Condition.appear;
-import static com.codeborne.selenide.Condition.disappear;
-import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.WebDriverRunner.clearBrowserCache;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
+
 
 /**
  * Created by makenshi on 4/9/18.
@@ -141,7 +140,7 @@ public class TestSelenideTemporaryDeprecated {
     public void userCreate() {
         open("/");
         try{
-        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(visible);
+        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(Condition.visible);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//p[last()]//a")).click();
 
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_2']//input[@name='name']"))
@@ -164,9 +163,9 @@ public class TestSelenideTemporaryDeprecated {
         else{}
 */
 
-        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(disappear);
-        $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).shouldBe(appear);
-        $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).shouldBe(disappear);
+        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(Condition.disappear);
+        $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).shouldBe(Condition.appear);
+        $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).shouldBe(Condition.disappear);
         $(By.xpath("//a[@class='skip']")).click();
 
         String url = WebDriverRunner.url();
@@ -187,19 +186,19 @@ public class TestSelenideTemporaryDeprecated {
     @Test(enabled = false)
     public void userCreateBubbleNameEmpty() {
         open("/");
-        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(visible);
+        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(Condition.visible);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//p[last()]//a")).click();
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_2']//button")).click();
 
         Assert.assertEquals(
                 $(By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']//div[@class='gwt-HTML']"))
-                        .shouldBe(visible).getText(), test.getProperty("name"));
+                        .shouldBe(Condition.visible).getText(), test.getProperty("name"));
     }
 
     @Test(enabled = false)
     public void userCreateBubbleEmailEmpty() {
         open("/");
-        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(visible);
+        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(Condition.visible);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//p[last()]//a")).click();
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_2']//input[@name='name']")).setValue(
                 getRandomString(Integer.parseInt(test.getProperty("random_name_lenght"))));
@@ -207,13 +206,13 @@ public class TestSelenideTemporaryDeprecated {
 
         Assert.assertEquals(
                 $(By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']//div[@class='gwt-HTML']"))
-                        .shouldBe(visible).getText(), test.getProperty("email"));
+                        .shouldBe(Condition.visible).getText(), test.getProperty("email"));
     }
 
     @Test(enabled = false)
     public void userCreateBubblePasswordEmpty() {
         open("/");
-        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(visible);
+        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(Condition.visible);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//p[last()]//a")).click();
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_2']//input[@name='name']")).setValue(
                 getRandomString(Integer.parseInt(test.getProperty("random_name_lenght"))));
@@ -223,13 +222,13 @@ public class TestSelenideTemporaryDeprecated {
 
         Assert.assertEquals(
                 $(By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']//div[@class='gwt-HTML']"))
-                        .shouldBe(visible).getText(), test.getProperty("six_letter"));
+                        .shouldBe(Condition.visible).getText(), test.getProperty("six_letter"));
     }
 
     @Test(enabled = false)
     public void userCreateBubbleAccExist() {
         open("/");
-        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(visible);
+        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(Condition.visible);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//p[last()]//a")).click();
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_2']//input[@name='name']")).setValue(
                 getRandomString(Integer.parseInt(test.getProperty("random_name_lenght"))));
@@ -240,13 +239,13 @@ public class TestSelenideTemporaryDeprecated {
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_2']//button")).click();
         Assert.assertEquals(
                 $(By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']//div[@class='gwt-HTML']"))
-                        .shouldBe(visible).getText(), test.getProperty("account_used"));
+                        .shouldBe(Condition.visible).getText(), test.getProperty("account_used"));
     }
 
     @Test(enabled = false)
     public void userCreateBubbleVeryLongName() {
         open("/");
-        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(visible);
+        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(Condition.visible);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//p[last()]//a")).click();
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_2']//input[@name='name']")).setValue(
                 getRandomString(Integer.parseInt(test.getProperty("very_long_name"))));
@@ -257,13 +256,13 @@ public class TestSelenideTemporaryDeprecated {
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_2']//button")).click();
         Assert.assertEquals(
                 $(By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']//div[@class='gwt-HTML']"))
-                        .shouldBe(visible).getText(), test.getProperty("long_name"));
+                        .shouldBe(Condition.visible).getText(), test.getProperty("long_name"));
     }
 
     @Test(enabled = false)
     public void userCreateBubbleVeryLongMail() {
         open("/");
-        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(visible);
+        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(Condition.visible);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//p[last()]//a")).click();
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_2']//input[@name='name']")).setValue(
                 getRandomString(Integer.parseInt(test.getProperty("random_name_lenght"))));
@@ -275,13 +274,13 @@ public class TestSelenideTemporaryDeprecated {
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_2']//button")).click();
         Assert.assertEquals(
                 $(By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']//div[@class='gwt-HTML']"))
-                        .shouldBe(visible).getText(), test.getProperty("email"));
+                        .shouldBe(Condition.visible).getText(), test.getProperty("email"));
     }
 
     @Test (enabled = false, description = "ERROR")
     public void userCreateBubbleLongNameOk() {
         open("/");
-        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(visible);
+        $(By.xpath(anchor.getProperty("Login1"))).shouldBe(Condition.visible);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//p[last()]//a")).click();
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_2']//input[@name='name']")).setValue(
                 getRandomString(Integer.parseInt(test.getProperty("work_long_name"))));
@@ -292,7 +291,7 @@ public class TestSelenideTemporaryDeprecated {
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_2']//button")).click();
         Assert.assertEquals(
                 $(By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']//div[@class='gwt-HTML']"))
-                        .shouldBe(visible).exists(), false);
+                        .shouldBe(Condition.visible).exists(), false);
         //TODO если тест пройдет то мы зарегистрируем аккаунт, но пока тут баг
         clearBrowserCache();
     }
@@ -303,7 +302,7 @@ public class TestSelenideTemporaryDeprecated {
     public void userLoginBubbleContextMenu() {
         open("/");
         // подправил ожидание на 10 секунд
-        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(visible,10000);
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible,10000);
         //$(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).contextClick().getText();
         SelenideElement menu = $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']"));
         //menu.contextClick().sendKeys(Keys.ARROW_DOWN);

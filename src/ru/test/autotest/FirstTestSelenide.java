@@ -1,5 +1,6 @@
-package ru.org.autotest;
+package ru.test.autotest;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.WebDriverRunner;
 import org.openqa.selenium.By;
@@ -9,11 +10,12 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import ru.utils.PropertiesStream;
+import ru.utils.TestUtils;
 
 import java.util.Properties;
 
 import static com.codeborne.selenide.Selenide.*;
-import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.WebDriverRunner.clearBrowserCache;
 
 /**
@@ -79,7 +81,7 @@ public class FirstTestSelenide {
     public void userLogin(String email, String password, boolean bool) {
         open("/");
         try{
-            $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(visible,10000);
+            $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible,10000);
 
             $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']"))
                     .val(email);
@@ -89,20 +91,20 @@ public class FirstTestSelenide {
 
             $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).click();
 
-            $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(appear,10000);
-            $(By.xpath("//div[@class='menu']")).shouldBe(visible);
-            $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(visible);
+            $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(Condition.appear,10000);
+            $(By.xpath("//div[@class='menu']")).shouldBe(Condition.visible);
+            $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(Condition.visible);
 
             String url = WebDriverRunner.url();
             String[] parts = url.split("#");
             StringBuilder deleteUrl = new StringBuilder(parts[0] + "#profile");
             open(deleteUrl.toString());
 
-            $(By.xpath("//div[@class='ProfileView']//div[@class='Title']//span[@class='gwt-InlineHTML']")).shouldBe(visible);
+            $(By.xpath("//div[@class='ProfileView']//div[@class='Title']//span[@class='gwt-InlineHTML']")).shouldBe(Condition.visible);
 
             Assert.assertEquals(
                     $$(By.xpath("//div[@class='backend-TitledPanel-content']//input[@class='gwt-TextBox']")).
-                            findBy(value(email)).exists(),bool);
+                            findBy(Condition.value(email)).exists(),bool);
             $(By.xpath("//a[@class='horizontal-icolink icolink-append']//div[@class='multiadmin-profile']")).click();
             $(By.xpath("//div[@class='store-profile-footer']//a")).click();
         }
@@ -169,7 +171,7 @@ public class FirstTestSelenide {
     @Test(dataProvider = "parseEmailPasswordData")
     public void userLoginBubble(String email, String password, String error) {
         open("/");
-        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(visible, 10000);
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible, 10000);
 
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).
                 setValue(email);
@@ -178,7 +180,7 @@ public class FirstTestSelenide {
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).click();
         Assert.assertEquals(
                 $(By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']//div[@class='gwt-HTML']"))
-                        .shouldBe(visible).getText(), error);
+                        .shouldBe(Condition.visible).getText(), error);
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -186,7 +188,7 @@ public class FirstTestSelenide {
     public void userLoginBorder() {
         open("/");
         // подправил ожидание на 10 секунд
-        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(visible,10000);
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible,10000);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).click();
         $(By.xpath("//div[@class='field field--large field--focus']")).exists();
         Assert.assertEquals($(By.xpath(
@@ -198,7 +200,7 @@ public class FirstTestSelenide {
     public void userLoginBubbleTab() {
         open("/");
         // подправил ожидание на 10 секунд
-        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(visible,10000);
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible,10000);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).pressTab();
         Assert.assertEquals($(By.xpath(
                 "//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//div[@class='field field--large field--focus']" +
@@ -209,7 +211,7 @@ public class FirstTestSelenide {
     public void userLoginBubbleEsc() {
         open("/");
         // подправил ожидание на 10 секунд
-        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(visible,10000);
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible,10000);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).click();
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).pressEscape();
         Assert.assertEquals(
@@ -221,11 +223,11 @@ public class FirstTestSelenide {
     public void userLoginBubbleEnter() {
         open("/");
         // подправил ожидание на 10 секунд
-        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(visible,10000);
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible,10000);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).pressEnter();
         Assert.assertEquals(
                 $(By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']//div[@class='gwt-HTML']"))
-                        .shouldBe(visible).getText(), test.getProperty("email"));
+                        .shouldBe(Condition.visible).getText(), test.getProperty("email"));
     }
     //-----------------------------------------------------------------------------------------------------------------------------
     // долгое ожидание поэтому не добавил в parseEmailPasswordData
@@ -233,7 +235,7 @@ public class FirstTestSelenide {
     public void userLoginBubbleNoCorrectPass() {
         open("/");
         // подправил ожидание на 10 секунд
-        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(visible,10000);
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible,10000);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).setValue(
                 test.getProperty("account_exist_email"));
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='password']")).setValue(
@@ -242,26 +244,25 @@ public class FirstTestSelenide {
         Assert.assertEquals(
                 // подправил тут ожидание пока на 10 секунд, тут оно может быть дольше чем в других тестах
                 $(By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']//div[@class='gwt-HTML']"))
-                        .waitUntil(visible,10000).getText(), test.getProperty("password_no_correct"));
+                        .waitUntil(Condition.visible,10000).getText(), test.getProperty("password_no_correct"));
     }
     //-----------------------------------------------------------------------------------------------------------------------------
 
     @Test //email
     public void userLoginBubbleMailWithSpace() {
         open("/");
-        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(visible, 10000);
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible, 10000);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).click();
         Assert.assertEquals(
                 $(By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']//div[@class='gwt-HTML']"))
-                        .shouldBe(visible).getText(), test.getProperty("email"));
+                        .shouldBe(Condition.visible).getText(), test.getProperty("email"));
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------
     @Test
     public void userLoginBrowserRefresh() {
         open("/");
-        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(visible, 10000);
-
+        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible, 10000);
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).
                 setValue(test.getProperty("account_exist_email"));
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='password']")).
@@ -270,33 +271,30 @@ public class FirstTestSelenide {
         $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).click();
         Assert.assertEquals(
                 $(By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']//div[@class='gwt-HTML']"))
-                        .shouldBe(visible).getText(), test.getProperty("email"));
+                        .shouldBe(Condition.visible).getText(), test.getProperty("email"));
     }
 
     @Test
     public void userLoginBrowserNewWindow() {
         open("/");
         try{
-            $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(visible,10000);
+            $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible,10000);
 
             $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']"))
                     .val(test.getProperty("account_exist_email"));
-
             $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='password']"))
                     .val(test.getProperty("account_exist_password"));
-
             $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).click();
-
-            $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(appear,10000);
-            $(By.xpath("//div[@class='menu']")).shouldBe(visible);
-            $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(visible);
+            $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(Condition.appear,10000);
+            $(By.xpath("//div[@class='menu']")).shouldBe(Condition.visible);
+            $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(Condition.visible);
 
             executeJavaScript("window.open('"+WebDriverRunner.url()+"','/');");
             switchTo().window(1);
-            $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(appear,10000);
-            $(By.xpath("//div[@class='menu']")).shouldBe(visible);
+            $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(Condition.appear,10000);
+            $(By.xpath("//div[@class='menu']")).shouldBe(Condition.visible);
             Assert.assertEquals(
-                    $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(visible).exists(),true);
+                    $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(Condition.visible).exists(),true);
 
 //TODO закрывать вторую вкладку
         }
