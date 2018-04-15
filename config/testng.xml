@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="TestAll">
+    <test name="negative">
+        <classes>
+            <class name="ru.test.autotest.NegativeTest" />
+        </classes>
+    </test>
+
+    <test name="positive">
+        <classes>
+            <class name="ru.test.autotest.PositiveTest" />
+        </classes>
+    </test>
+
+    <test name="experimental">
+        <classes>
+            <class name="ru.test.autotest.FirstTestSelenide" />
+        </classes>
+    </test>
+</suite>
