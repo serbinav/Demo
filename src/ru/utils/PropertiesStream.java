@@ -2,7 +2,6 @@ package ru.utils;
 
 import java.io.*;
 import java.util.Properties;
-import java.util.Random;
 
 /**
  * Created by makenshi on 4/12/18.

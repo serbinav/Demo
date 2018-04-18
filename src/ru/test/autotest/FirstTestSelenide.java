@@ -1,7 +1,9 @@
 package ru.test.autotest;
 
 import com.codeborne.selenide.Configuration;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 import ru.utils.PropertiesStream;
 import ru.utils.TestUtils;
 
@@ -21,12 +23,12 @@ public class FirstTestSelenide {
     @BeforeClass
     public static void setUp() {
         utils = new TestUtils();
-        Properties prop = new PropertiesStream("config/properties.ini","UTF-8").getProperties();
+        Properties prop = new PropertiesStream("config/properties.ini", "UTF-8").getProperties();
 
         Configuration.baseUrl = prop.getProperty("site_name");
         Configuration.browser = prop.getProperty("browser_name");
 
-        test = new PropertiesStream("config/test.ini","UTF-8").getProperties();
+        test = new PropertiesStream("config/test.ini", "UTF-8").getProperties();
     }
 
     //TODO подумать над тем что некоторые тесты могут падать при условии что аккаунты не зареганы
@@ -34,10 +36,8 @@ public class FirstTestSelenide {
     //-----------------------------------------------------------------------------------------------------------------------------
 
 
-
-
     @AfterMethod
-    public void tearDown(){
+    public void tearDown() {
         clearBrowserCache();
     }
 
