@@ -6,20 +6,17 @@ import java.util.Random;
  * Created by makenshi on 4/12/18.
  */
 public class TestUtils {
+    private static final String LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
 
-    public TestUtils() {}
-
-    public String generateRandomString(int length) {
-        String s = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
-        StringBuffer randomString = new StringBuffer();
-
+    public static String generateRandomString(int length) {
+        StringBuilder randomString = new StringBuilder();
         for (int i = 0; i < length; i++) {
-            randomString.append(s.charAt(new Random().nextInt(s.length())));
+            randomString.append(LETTERS.charAt(new Random().nextInt(LETTERS.length())));
         }
         return randomString.toString();
     }
 
-    public String composeEmail(String randomPart, String example) {
-        return example.replaceAll("@", randomPart+"@");
+    public static String composeEmail(String randomPart, String example) {
+        return example.replaceAll("@", randomPart + "@");
     }
 }

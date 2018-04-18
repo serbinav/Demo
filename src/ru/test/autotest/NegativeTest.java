@@ -239,7 +239,9 @@ public class NegativeTest {
     public void userLoginRestoreBadPassword(String password, String error)
     {
         open("/");
-        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible,
+        try{
+
+            $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible,
                 Integer.parseInt(test.getProperty("explicit_wait_lp")));
 
         executeJavaScript("window.open('"+ test.getProperty("url_yandex")+"','/');");
@@ -266,8 +268,8 @@ public class NegativeTest {
         switchTo().window(1);
 
         for (Integer i = 0; i < Integer.parseInt(test.getProperty("number_retry_yandex")); i++) {
-            refresh();
             sleep(1000);
+            refresh();
             boolean visible =
                     $(By.xpath("//div[@class='mail-MessageSnippet-Content']/span[contains(., 'Reset your Ecwid password')]")).exists();
             if (visible == true)
@@ -277,10 +279,19 @@ public class NegativeTest {
         }
         $(By.xpath("//div[@class='mail-MessageSnippet-Content']/span[contains(., 'Reset your Ecwid password')]")).click();
         String restore = $(By.xpath("//div[contains(@class,'mail-Message-Body-Content_plain')]//a[last()]")).getAttribute("href");
+        $(By.xpath("//span[contains(@class, 'mail-User-Avatar')]")).click();
 
-        $(By.xpath("//span[contains(@class, 'mail-User-Avatar')]")).waitUntil(Condition.appear,5000).click();
-        $(By.xpath("//div[@class='_nb-popup-content']//div[@class='b-mail-dropdown__item']/a[contains(@href, 'action=logout')]"))
-                .waitUntil(Condition.appear,5000).click();
+        for (Integer i = 0; i < Integer.parseInt(test.getProperty("number_retry_yandex")); i++) {
+            $(By.xpath("//span[contains(@class, 'mail-User-Avatar')]")).click();
+            boolean visible =
+                    $(By.xpath("//div[@class='_nb-popup-content']//div[@class='b-mail-dropdown__item']/a[contains(@href, 'action=logout')]")).exists();
+            if (visible == true)
+            {
+                break;
+            }
+            sleep(1000);
+        }
+        $(By.xpath("//div[@class='_nb-popup-content']//div[@class='b-mail-dropdown__item']/a[contains(@href, 'action=logout')]")).click();
 
         executeJavaScript("window.close();");
         switchTo().window(0);
@@ -291,7 +302,10 @@ public class NegativeTest {
         Assert.assertEquals(
                 $(By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']//div[@class='gwt-HTML']"))
                         .shouldBe(Condition.visible).getText(), error);
-        close();
+        }
+        finally {
+            close();
+        }
     }
 
     @AfterMethod

@@ -139,12 +139,14 @@ public class PositiveTest {
             $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='password']"))
                     .val(test.getProperty("account_exist_password"));
             $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).click();
-            $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(Condition.appear,Integer.parseInt(test.getProperty("explicit_wait_cp")));
+            $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(
+                    Condition.appear,Integer.parseInt(test.getProperty("explicit_wait_cp")));
             $(By.xpath("//div[@class='menu']")).shouldBe(Condition.visible);
             $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(Condition.visible);
             executeJavaScript("window.open('"+WebDriverRunner.url()+"','/');");
             switchTo().window(1);
-            $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(Condition.appear,Integer.parseInt(test.getProperty("explicit_wait_cp")));
+            $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(
+                    Condition.appear,Integer.parseInt(test.getProperty("explicit_wait_cp")));
             $(By.xpath("//div[@class='menu']")).shouldBe(Condition.visible);
             Assert.assertEquals(
                     $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(Condition.visible).exists(),true);
@@ -218,6 +220,7 @@ public class PositiveTest {
     public void userLoginRestorePassword()
     {
         open("/");
+        try{
         $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible,
                 Integer.parseInt(test.getProperty("explicit_wait_lp")));
 
@@ -264,7 +267,10 @@ public class PositiveTest {
         $(By.xpath("//div[@class='menu']")).shouldBe(Condition.visible);
         Assert.assertEquals(
                     $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(Condition.visible).exists(),true);
-        close();
+        }
+        finally {
+            close();
+        }
     }
 
     @AfterMethod
