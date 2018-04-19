@@ -268,18 +268,13 @@ public class NegativeTest {
             $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_3']//button")).click();
             switchTo().window(1);
 
-            for (Integer i = 0; i < Integer.parseInt(test.getProperty("number_retry_yandex")); i++) {
-                sleep(1000);
-                refresh();
-                boolean visible =
-                        $(By.xpath("//div[@class='mail-MessageSnippet-Content']/span[contains(., 'Reset your Ecwid password')]")).exists();
-                if (visible == true) {
-                    break;
-                }
-            }
+            Assert.assertTrue(utils.waitRefresh(Integer.parseInt(test.getProperty("number_retry_yandex")),
+                    1000,
+                    "//div[@class='mail-MessageSnippet-Content']/span[contains(., 'Reset your Ecwid password')]"));
+
             $(By.xpath("//div[@class='mail-MessageSnippet-Content']/span[contains(., 'Reset your Ecwid password')]")).click();
             String restore = $(By.xpath("//div[contains(@class,'mail-Message-Body-Content_plain')]//a[last()]")).getAttribute("href");
-            $(By.xpath("//span[contains(@class, 'mail-User-Avatar')]")).click();
+            //$(By.xpath("//span[contains(@class, 'mail-User-Avatar')]")).click();
 
             for (Integer i = 0; i < Integer.parseInt(test.getProperty("number_retry_yandex")); i++) {
                 $(By.xpath("//span[contains(@class, 'mail-User-Avatar')]")).click();
@@ -290,6 +285,7 @@ public class NegativeTest {
                 }
                 sleep(1000);
             }
+
             $(By.xpath("//div[@class='_nb-popup-content']//div[@class='b-mail-dropdown__item']/a[contains(@href, 'action=logout')]")).click();
 
             executeJavaScript("window.close();");

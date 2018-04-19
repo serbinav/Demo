@@ -2,6 +2,7 @@ package ru.test.autotest;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
 import org.openqa.selenium.By;
 import org.testng.Assert;
@@ -9,6 +10,8 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import ru.page.ControlPanelPage;
+import ru.page.LoginPage;
 import ru.utils.PropertiesStream;
 import ru.utils.TestUtils;
 
@@ -75,46 +78,33 @@ public class PositiveTest {
     @Test(dataProvider = "parseLoginEmailPasswordData")
     public void userLogin(String email, String password, boolean bool) {
         open("/");
-        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible,
-                Integer.parseInt(test.getProperty("explicit_wait_lp")));
 
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']"))
-                .val(email);
+        LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
+        lp.getEmailField().val(email);
+        lp.getPasswordField().val(password);
+        lp.getSignInButton().click();
 
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='password']"))
-                .val(password);
-
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).click();
-
-        $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(Condition.appear, Integer.parseInt(test.getProperty("explicit_wait_cp")));
-        $(By.xpath("//div[@class='menu']")).shouldBe(Condition.visible);
-        $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(Condition.visible);
+        ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
 
         String url = WebDriverRunner.url();
         String[] parts = url.split("#");
         StringBuilder deleteUrl = new StringBuilder(parts[0] + "#profile");
         open(deleteUrl.toString());
 
-        $(By.xpath("//div[@class='ProfileView']//div[@class='Title']//span[@class='gwt-InlineHTML']")).shouldBe(Condition.visible);
-
+        cp.getPageProfile().shouldBe(Condition.visible);;
         Assert.assertEquals(
-                $$(By.xpath("//div[@class='backend-TitledPanel-content']//input[@class='gwt-TextBox']")).
-                        findBy(Condition.value(email)).exists(), bool);
-        $(By.xpath("//a[@class='horizontal-icolink icolink-append']//div[@class='multiadmin-profile']")).click();
-        $(By.xpath("//div[@class='store-profile-footer']//a")).click();
+                cp.getCollectionUserData().findBy(Condition.value(email)).exists(), bool);
+        cp.exit();
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------
     @Test
     public void userLoginBorder() {
         open("/");
-        // подправил ожидание на 10 секунд
-        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible, Integer.parseInt(test.getProperty("explicit_wait_lp")));
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).click();
-        $(By.xpath("//div[@class='field field--large field--focus']")).exists();
-        Assert.assertEquals($(By.xpath(
-                "//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//div[@class='field field--large field--focus']" +
-                        "//input[@name='email']")).exists(), true);
+        LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
+        SelenideElement focusFirst = lp.getEmailField();
+        focusFirst.click();
+        Assert.assertEquals(focusFirst.find(lp.FOCUS).exists() , true);
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -122,11 +112,9 @@ public class PositiveTest {
     public void userLoginBubbleTab() {
         open("/");
         // подправил ожидание на 10 секунд
-        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible, Integer.parseInt(test.getProperty("explicit_wait_lp")));
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).pressTab();
-        Assert.assertEquals($(By.xpath(
-                "//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//div[@class='field field--large field--focus']" +
-                        "//input[@type='password']")).exists(), true);
+        LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
+        lp.getEmailField().pressTab();
+        Assert.assertEquals(lp.getPasswordField().find(lp.FOCUS).exists(), true);
     }
     //-----------------------------------------------------------------------------------------------------------------------------
 
@@ -245,15 +233,10 @@ public class PositiveTest {
             $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_3']//button")).click();
             switchTo().window(1);
 
-            for (Integer i = 0; i < Integer.parseInt(test.getProperty("number_retry_yandex")); i++) {
-                refresh();
-                sleep(1000);
-                boolean visible =
-                        $(By.xpath("//div[@class='mail-MessageSnippet-Content']/span[contains(., 'Reset your Ecwid password')]")).exists();
-                if (visible == true) {
-                    break;
-                }
-            }
+            Assert.assertTrue(utils.waitRefresh(Integer.parseInt(test.getProperty("number_retry_yandex")),
+                    1000,
+                    "//div[@class='mail-MessageSnippet-Content']/span[contains(., 'Reset your Ecwid password')]"));
+
             $(By.xpath("//div[@class='mail-MessageSnippet-Content']/span[contains(., 'Reset your Ecwid password')]")).click();
             String restore = $(By.xpath("//div[contains(@class,'mail-Message-Body-Content_plain')]//a[last()]")).getAttribute("href");
             executeJavaScript("window.close();");
