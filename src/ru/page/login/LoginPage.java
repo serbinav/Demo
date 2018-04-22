@@ -37,15 +37,15 @@ public class LoginPage {
         return     $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button"));
     }
 
-    public SelenideElement getBubbleError() {
+    public SelenideElement getErrorBubble() {
         return     $(By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']//div[@class='gwt-HTML']"));
     }
 
-    public SelenideElement getCheckKeepMeSignedIn() {
+    public SelenideElement getSignedInCheckbox() {
         return     $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//span[@class='gwt-CheckBox']"));
     }
 
-    public SelenideElement getLinkForgotYourPassword() {
+    public SelenideElement getForgotPasswordLink() {
         return     $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//p[1]//a[1]"));
     }
 

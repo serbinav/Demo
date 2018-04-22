@@ -10,7 +10,7 @@ public abstract class DropPassword {
 
     SelenideElement anchor;
 
-    DropPassword(){
+    DropPassword() {
         anchor = $(By.xpath("//div[@class='reset-view block-view-on']//h3//div[@class='gwt-HTML']")).shouldBe(Condition.visible);
     }
 

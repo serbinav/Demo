@@ -26,11 +26,11 @@ public class ControlPanelPage {
         return anchor;
     }
 
-    public SelenideElement getPageProfile() {
+    public SelenideElement getProfilePage() {
         return     $(By.xpath("//div[@class='ProfileView']//div[@class='Title']//span[@class='gwt-InlineHTML']"));
     }
 
-    public ElementsCollection getCollectionUserData() {
+    public ElementsCollection getUserDataCollection() {
         return     $$(By.xpath("//div[@class='backend-TitledPanel-content']//input[@class='gwt-TextBox']"));
     }
 

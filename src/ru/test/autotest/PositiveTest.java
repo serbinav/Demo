@@ -14,15 +14,14 @@ import ru.page.controlpanel.ControlPanelPage;
 import ru.page.login.ChangePasswordPage;
 import ru.page.login.LoginPage;
 import ru.page.login.PasswordResetPage;
+import ru.page.yandex.YandexLitePage;
 import ru.page.yandex.YandexLoginPage;
-import ru.page.yandex.YandexPage;
 import ru.utils.PropertiesStream;
 import ru.utils.TestUtils;
 
 import java.util.Properties;
 
 import static com.codeborne.selenide.Selenide.*;
-import static com.codeborne.selenide.Selenide.switchTo;
 import static com.codeborne.selenide.WebDriverRunner.clearBrowserCache;
 
 /**
@@ -95,9 +94,10 @@ public class PositiveTest {
         StringBuilder deleteUrl = new StringBuilder(parts[0] + "#profile");
         open(deleteUrl.toString());
 
-        cp.getPageProfile().shouldBe(Condition.visible);;
+        cp.getProfilePage().shouldBe(Condition.visible);
+        ;
         Assert.assertEquals(
-                cp.getCollectionUserData().findBy(Condition.value(email)).exists(), bool);
+                cp.getUserDataCollection().findBy(Condition.value(email)).exists(), bool);
         cp.logout();
     }
 
@@ -108,7 +108,7 @@ public class PositiveTest {
         LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
         SelenideElement focusFirst = lp.getEmailField();
         focusFirst.click();
-        Assert.assertEquals(focusFirst.find(By.xpath(lp.FOCUS)).exists() , true);
+        Assert.assertEquals(focusFirst.find(By.xpath(lp.FOCUS)).exists(), true);
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -137,8 +137,7 @@ public class PositiveTest {
         try {
             ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
             Assert.assertEquals(cp.getAnchor().shouldBe(Condition.visible).exists(), true);
-        }
-        finally {
+        } finally {
             executeJavaScript("window.close();");
             switchTo().window(0);
         }
@@ -167,7 +166,7 @@ public class PositiveTest {
             lp.getSignInButton().click();
             // убрал проверку на ошибку в bubble  test.getProperty("password_no_correct"));
             // она тут не главная
-            lp.getBubbleError().waitUntil(Condition.visible, 5000);
+            lp.getErrorBubble().waitUntil(Condition.visible, 5000);
         }
         lp.getPasswordField().setValue(test.getProperty("account_exist_password"));
         lp.getSignInButton().click();
@@ -182,7 +181,7 @@ public class PositiveTest {
         LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
         lp.getEmailField().val(test.getProperty("account_exist_email"));
         lp.getPasswordField().val(test.getProperty("account_exist_password"));
-        lp.getCheckKeepMeSignedIn().click();
+        lp.getSignedInCheckbox().click();
         lp.getSignInButton().click();
 
         ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
@@ -192,45 +191,41 @@ public class PositiveTest {
     @Test
     public void userLoginRestorePassword() {
         open("/");
-        try{
+        try {
             LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
 
             executeJavaScript("window.open('" + test.getProperty("url_yandex") + "','/');");
             switchTo().window(1);
 
             YandexLoginPage yandexLogin = new YandexLoginPage(Integer.parseInt(test.getProperty("explicit_wait_yandex")));
-            yandexLogin.getBigButton().click();
-            yandexLogin.getPassportLogin().setValue(test.getProperty("login_yandex"));
-            yandexLogin.getPassportPasswd().setValue(test.getProperty("password_yandex"));
+            yandexLogin.getLoginInput().setValue(test.getProperty("login_yandex"));
+            yandexLogin.getPasswordInput().setValue(test.getProperty("password_yandex"));
             yandexLogin.getLoginButton().click();
 
-            System.out.println($(By.xpath("//span[@class='mail-App-Footer-Item']")).getText());
-
-            YandexPage yandex = new YandexPage(Integer.parseInt(test.getProperty("explicit_wait_yandex")));
-            yandex.getToolbarSelectAll().click();
-            yandex.getToolbarDelete().click();
+            YandexLitePage yandex = new YandexLitePage(Integer.parseInt(test.getProperty("explicit_wait_yandex")));
+            //если есть что удалить удалим, если нет пойдем дальше
+            if (yandex.getSelectAllCheckbox().exists() == true) {
+                yandex.getSelectAllCheckbox().click();
+                yandex.getDeleteButton().click();
+            }
 
             switchTo().window(0);
-
-            lp.getLinkForgotYourPassword().click();
+            lp.getForgotPasswordLink().click();
 
             PasswordResetPage prp = new PasswordResetPage();
             prp.getField().setValue(test.getProperty("account_exist_email_yandex"));
             prp.getButton().click();
             switchTo().window(1);
-            sleep(3000);
 
-            yandex.waitRefresh(Integer.parseInt(test.getProperty("number_retry_yandex")),
+            yandex.sleepRefresh(Integer.parseInt(test.getProperty("number_retry_yandex")),
                     1000,
                     yandex.getResetPasswordEmail(test.getProperty("find_email_text")));
 
             yandex.getResetPasswordEmail(test.getProperty("find_email_text")).click();
-
-            String restore = yandex.getPasswordRecoveryLink().getAttribute("href");
+            String restore = yandex.getPasswordRecoveryLink().getText();
 
             executeJavaScript("window.close();");
             switchTo().window(0);
-            sleep(3000);
             open(restore);
 
             ChangePasswordPage cpp = new ChangePasswordPage();
