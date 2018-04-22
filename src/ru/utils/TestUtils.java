@@ -26,15 +26,4 @@ public class TestUtils {
         return example.replaceAll("@", randomPart + "@");
     }
 
-    public boolean waitRefresh(int countRetry, int sleep, String xpath) {
-        for (Integer i = 0; i < countRetry; i++) {
-            refresh();
-            sleep(sleep);
-            boolean visible =
-                    $(By.xpath(xpath)).exists();
-            if (visible == true)
-                return true;
-        }
-        return false;
-    }
 }

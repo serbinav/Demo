@@ -8,6 +8,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import ru.page.yandex.YandexPage;
 import ru.utils.PropertiesStream;
 import ru.utils.TestUtils;
 
@@ -268,9 +269,14 @@ public class NegativeTest {
             $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_3']//button")).click();
             switchTo().window(1);
 
-            Assert.assertTrue(utils.waitRefresh(Integer.parseInt(test.getProperty("number_retry_yandex")),
+
+
+            YandexPage yandex = new YandexPage(Integer.parseInt(test.getProperty("explicit_wait_yandex")));
+            yandex.waitRefresh(Integer.parseInt(test.getProperty("number_retry_yandex")),
                     1000,
-                    "//div[@class='mail-MessageSnippet-Content']/span[contains(., 'Reset your Ecwid password')]"));
+                     yandex.getResetPasswordEmail(test.getProperty("find_email_text")));
+
+
 
             $(By.xpath("//div[@class='mail-MessageSnippet-Content']/span[contains(., 'Reset your Ecwid password')]")).click();
             String restore = $(By.xpath("//div[contains(@class,'mail-Message-Body-Content_plain')]//a[last()]")).getAttribute("href");

@@ -10,14 +10,19 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import ru.page.ControlPanelPage;
-import ru.page.LoginPage;
+import ru.page.controlpanel.ControlPanelPage;
+import ru.page.login.ChangePasswordPage;
+import ru.page.login.LoginPage;
+import ru.page.login.PasswordResetPage;
+import ru.page.yandex.YandexLoginPage;
+import ru.page.yandex.YandexPage;
 import ru.utils.PropertiesStream;
 import ru.utils.TestUtils;
 
 import java.util.Properties;
 
 import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Selenide.switchTo;
 import static com.codeborne.selenide.WebDriverRunner.clearBrowserCache;
 
 /**
@@ -78,7 +83,6 @@ public class PositiveTest {
     @Test(dataProvider = "parseLoginEmailPasswordData")
     public void userLogin(String email, String password, boolean bool) {
         open("/");
-
         LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
         lp.getEmailField().val(email);
         lp.getPasswordField().val(password);
@@ -94,7 +98,7 @@ public class PositiveTest {
         cp.getPageProfile().shouldBe(Condition.visible);;
         Assert.assertEquals(
                 cp.getCollectionUserData().findBy(Condition.value(email)).exists(), bool);
-        cp.exit();
+        cp.logout();
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -104,151 +108,137 @@ public class PositiveTest {
         LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
         SelenideElement focusFirst = lp.getEmailField();
         focusFirst.click();
-        Assert.assertEquals(focusFirst.find(lp.FOCUS).exists() , true);
+        Assert.assertEquals(focusFirst.find(By.xpath(lp.FOCUS)).exists() , true);
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------
+
     @Test
     public void userLoginBubbleTab() {
         open("/");
-        // подправил ожидание на 10 секунд
         LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
         lp.getEmailField().pressTab();
-        Assert.assertEquals(lp.getPasswordField().find(lp.FOCUS).exists(), true);
+        Assert.assertEquals(lp.getPasswordField().find(By.xpath(lp.FOCUS)).exists(), true);
     }
-    //-----------------------------------------------------------------------------------------------------------------------------
 
+    //-----------------------------------------------------------------------------------------------------------------------------
     @Test
     public void userLoginBrowserNewWindow() {
         open("/");
-        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible, Integer.parseInt(test.getProperty("explicit_wait_lp")));
+        LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
+        lp.getEmailField().val(test.getProperty("account_exist_email"));
+        lp.getPasswordField().val(test.getProperty("account_exist_password"));
+        lp.getSignInButton().click();
 
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']"))
-                .val(test.getProperty("account_exist_email"));
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='password']"))
-                .val(test.getProperty("account_exist_password"));
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).click();
-        $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(
-                Condition.appear, Integer.parseInt(test.getProperty("explicit_wait_cp")));
-        $(By.xpath("//div[@class='menu']")).shouldBe(Condition.visible);
-        $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(Condition.visible);
+        new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
         executeJavaScript("window.open('" + WebDriverRunner.url() + "','/');");
         switchTo().window(1);
-        $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(
-                Condition.appear, Integer.parseInt(test.getProperty("explicit_wait_cp")));
-        $(By.xpath("//div[@class='menu']")).shouldBe(Condition.visible);
-        Assert.assertEquals(
-                $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(Condition.visible).exists(), true);
-        executeJavaScript("window.close();");
-        switchTo().window(0);
+
+        try {
+            ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
+            Assert.assertEquals(cp.getAnchor().shouldBe(Condition.visible).exists(), true);
+        }
+        finally {
+            executeJavaScript("window.close();");
+            switchTo().window(0);
+        }
     }
 
     @Test
     public void userLoginBrowserBack() {
         open("/");
-        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible, Integer.parseInt(test.getProperty("explicit_wait_lp")));
-
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']"))
-                .val(test.getProperty("account_exist_email"));
-
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='password']"))
-                .val(test.getProperty("account_exist_password"));
-
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).click();
-
-        $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(Condition.appear, Integer.parseInt(test.getProperty("explicit_wait_cp")));
-        $(By.xpath("//div[@class='menu']")).shouldBe(Condition.visible);
-        $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(Condition.visible);
+        LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
+        lp.getEmailField().val(test.getProperty("account_exist_email"));
+        lp.getPasswordField().val(test.getProperty("account_exist_password"));
+        lp.getSignInButton().click();
+        ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
         back();
-        Assert.assertEquals(
-                $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(Condition.visible).exists(), true);
+        Assert.assertEquals(cp.getAnchor().shouldBe(Condition.visible).exists(), true);
     }
 
     @Test
     public void userLoginSeveralAttemptsIncorrectly() {
         open("/");
-        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible, Integer.parseInt(test.getProperty("explicit_wait_lp")));
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']")).setValue(
-                test.getProperty("account_exist_email"));
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='password']")).setValue(
-                utils.generateRandomString(Integer.parseInt(test.getProperty("password_random_lenght"))));
+        LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
+        lp.getEmailField().setValue(test.getProperty("account_exist_email"));
+        lp.getPasswordField().setValue(utils.generateRandomString(Integer.parseInt(test.getProperty("password_random_lenght"))));
+
         for (Integer i = 0; i < Integer.parseInt(test.getProperty("number_attempts_incorrectly_login")); i++) {
-            $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).click();
-            Assert.assertEquals(
-                    $(By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']//div[@class='gwt-HTML']"))
-                            .waitUntil(Condition.visible, 5000).getText(), test.getProperty("password_no_correct"));
+            lp.getSignInButton().click();
+            // убрал проверку на ошибку в bubble  test.getProperty("password_no_correct"));
+            // она тут не главная
+            lp.getBubbleError().waitUntil(Condition.visible, 5000);
         }
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='password']")).
-                setValue(test.getProperty("account_exist_password"));
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).click();
-        $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(Condition.appear, Integer.parseInt(test.getProperty("explicit_wait_cp")));
-        $(By.xpath("//div[@class='menu']")).shouldBe(Condition.visible);
-        Assert.assertEquals(
-                $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(Condition.visible).exists(), true);
+        lp.getPasswordField().setValue(test.getProperty("account_exist_password"));
+        lp.getSignInButton().click();
+
+        ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
+        Assert.assertEquals(cp.getAnchor().shouldBe(Condition.visible).exists(), true);
     }
 
     @Test
     public void userLoginKeepSignedIn() {
         open("/");
-        $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible, Integer.parseInt(test.getProperty("explicit_wait_lp")));
+        LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
+        lp.getEmailField().val(test.getProperty("account_exist_email"));
+        lp.getPasswordField().val(test.getProperty("account_exist_password"));
+        lp.getCheckKeepMeSignedIn().click();
+        lp.getSignInButton().click();
 
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']"))
-                .val(test.getProperty("account_exist_email"));
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='password']"))
-                .val(test.getProperty("account_exist_password"));
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//span[@class='gwt-CheckBox']")).click();
-        $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button")).click();
-        $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(Condition.appear, Integer.parseInt(test.getProperty("explicit_wait_cp")));
-        $(By.xpath("//div[@class='menu']")).shouldBe(Condition.visible);
-        $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(Condition.visible);
-        Assert.assertEquals(
-                $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(Condition.visible).exists(), true);
+        ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
+        Assert.assertEquals(cp.getAnchor().shouldBe(Condition.visible).exists(), true);
     }
 
     @Test
     public void userLoginRestorePassword() {
         open("/");
-        try {
-            $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible,
-                    Integer.parseInt(test.getProperty("explicit_wait_lp")));
+        try{
+            LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
 
             executeJavaScript("window.open('" + test.getProperty("url_yandex") + "','/');");
             switchTo().window(1);
-            $(By.xpath("//div[@class='Footer-Copyright']")).waitUntil(Condition.visible,
-                    Integer.parseInt(test.getProperty("explicit_wait_yandex")));
-            $(By.xpath("//a[contains(@class,'HeadBanner-Button-Enter')]")).click();
-            $(By.xpath("//input[@class='passport-Input-Controller' and @name='login']")).
-                    setValue(test.getProperty("login_yandex"));
-            $(By.xpath("//input[@class='passport-Input-Controller' and @name='passwd']")).
-                    setValue(test.getProperty("password_yandex"));
-            $(By.xpath("//span[@class='passport-Button-Text']")).click();
-            $(By.xpath("//div[contains(@class,'mail-Toolbar-Item_main-select-all')]//span[@class='checkbox_view']")).click();
-            $(By.xpath("//span[contains(@class,'js-toolbar-item-title-delete')]")).click();
+
+            YandexLoginPage yandexLogin = new YandexLoginPage(Integer.parseInt(test.getProperty("explicit_wait_yandex")));
+            yandexLogin.getBigButton().click();
+            yandexLogin.getPassportLogin().setValue(test.getProperty("login_yandex"));
+            yandexLogin.getPassportPasswd().setValue(test.getProperty("password_yandex"));
+            yandexLogin.getLoginButton().click();
+
+            System.out.println($(By.xpath("//span[@class='mail-App-Footer-Item']")).getText());
+
+            YandexPage yandex = new YandexPage(Integer.parseInt(test.getProperty("explicit_wait_yandex")));
+            yandex.getToolbarSelectAll().click();
+            yandex.getToolbarDelete().click();
 
             switchTo().window(0);
-            $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//p[1]//a[1]")).click();
 
-            $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_3']//input[@name='email']")).
-                    setValue(test.getProperty("account_exist_email_yandex"));
-            $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_3']//button")).click();
+            lp.getLinkForgotYourPassword().click();
+
+            PasswordResetPage prp = new PasswordResetPage();
+            prp.getField().setValue(test.getProperty("account_exist_email_yandex"));
+            prp.getButton().click();
             switchTo().window(1);
+            sleep(3000);
 
-            Assert.assertTrue(utils.waitRefresh(Integer.parseInt(test.getProperty("number_retry_yandex")),
+            yandex.waitRefresh(Integer.parseInt(test.getProperty("number_retry_yandex")),
                     1000,
-                    "//div[@class='mail-MessageSnippet-Content']/span[contains(., 'Reset your Ecwid password')]"));
+                    yandex.getResetPasswordEmail(test.getProperty("find_email_text")));
 
-            $(By.xpath("//div[@class='mail-MessageSnippet-Content']/span[contains(., 'Reset your Ecwid password')]")).click();
-            String restore = $(By.xpath("//div[contains(@class,'mail-Message-Body-Content_plain')]//a[last()]")).getAttribute("href");
+            yandex.getResetPasswordEmail(test.getProperty("find_email_text")).click();
+
+            String restore = yandex.getPasswordRecoveryLink().getAttribute("href");
+
             executeJavaScript("window.close();");
             switchTo().window(0);
+            sleep(3000);
             open(restore);
-            $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_4']//input[@name='password']")).
-                    setValue(test.getProperty("account_exist_password_yandex"));
-            $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_4']//button")).click();
-            $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(Condition.appear, Integer.parseInt(test.getProperty("explicit_wait_cp")));
-            $(By.xpath("//div[@class='menu']")).shouldBe(Condition.visible);
-            Assert.assertEquals(
-                    $(By.xpath("//h1[@class='settings-page__title']")).shouldBe(Condition.visible).exists(), true);
+
+            ChangePasswordPage cpp = new ChangePasswordPage();
+            cpp.getField().setValue(test.getProperty("account_exist_password_yandex"));
+            cpp.getButton().click();
+
+            ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
+            Assert.assertEquals(cp.getAnchor().shouldBe(Condition.visible).exists(), true);
         } finally {
             close();
         }
@@ -258,6 +248,4 @@ public class PositiveTest {
     public void tearDown() {
         clearBrowserCache();
     }
-
 }
-
