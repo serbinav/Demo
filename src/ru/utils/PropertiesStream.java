@@ -8,49 +8,20 @@ import java.util.Properties;
  */
 public class PropertiesStream {
 
-    private Properties callback;
-    protected InputStream stream = null;
-    protected InputStreamReader reader = null;
+    private final Properties properties = new Properties();
 
     public PropertiesStream(String path, String charset) {
-        callback = new Properties();
 
-        try {
-            try {
-                stream = new FileInputStream(new File(path));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            try {
-                reader = new InputStreamReader(stream, charset);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            callback = new Properties();
-            try {
-                callback.load(reader);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        } finally {
-            try {
-                stream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+        try (InputStream stream = new FileInputStream(new File(path));
+             InputStreamReader reader = new InputStreamReader(stream, charset)) {
+            properties.load(reader);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     public Properties getProperties() {
-        return this.callback;
+        return properties;
     }
 
 }

@@ -1,7 +1,7 @@
 package ru.test.autotest;
 
-import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
+import org.openqa.selenium.Keys;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 import ru.page.login.ChangePasswordPage;
 import ru.page.login.LoginPage;
 import ru.page.login.PasswordResetPage;
-import ru.page.yandex.YandexLitePage;
+import ru.page.yandex.YandexLiteMailPage;
 import ru.page.yandex.YandexLoginPage;
 import ru.utils.PropertiesStream;
 import ru.utils.TestUtils;
@@ -96,11 +96,8 @@ public class NegativeTest {
     public void userLoginBubble(String email, String password, String error) {
         open("/");
         LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
-        lp.getEmailField().setValue(email);
-        lp.getPasswordField().setValue(password);
-        lp.getSignInButton().click();
-        Assert.assertEquals(
-                lp.getErrorBubble().shouldBe(Condition.visible).getText(), error);
+        lp.loginToEcwid(email, password);
+        Assert.assertEquals(lp.getErrorBubbleText(), error);
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -108,10 +105,9 @@ public class NegativeTest {
     public void userLoginBubbleEsc() {
         open("/");
         LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
-        lp.getSignInButton().click();
-        lp.getEmailField().pressEscape();
-        Assert.assertEquals(
-                lp.getErrorBubble().exists(), false);
+        lp.clickSignInButton();
+        lp.sendKeysEmail(Keys.ESCAPE);
+        Assert.assertEquals(lp.existsErrorBubble(), false);
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -119,25 +115,19 @@ public class NegativeTest {
     public void userLoginBubbleEnter() {
         open("/");
         LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
-        lp.getSignInButton().pressEnter();
-        Assert.assertEquals(
-                lp.getErrorBubble()
-                        .shouldBe(Condition.visible).getText(), test.getProperty("email"));
+        lp.sendKeysSignInButton(Keys.ENTER);
+        Assert.assertEquals(lp.getErrorBubbleText(), test.getProperty("email"));
     }
-
     //-----------------------------------------------------------------------------------------------------------------------------
     // долгое ожидание поэтому не добавил в parseEmailPasswordData
     @Test
     public void userLoginBubbleNoCorrectPass() {
         open("/");
         LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
-        lp.getEmailField().setValue(test.getProperty("account_exist_email"));
-        lp.getPasswordField().setValue(
+        lp.loginToEcwid(test.getProperty("account_exist_email"),
                 utils.generateRandomString(Integer.parseInt(test.getProperty("password_random_lenght"))));
-        lp.getSignInButton().click();
         // подправил тут ожидание пока на explicit_wait_cp(7с), тут оно может быть дольше чем в других тестах
-        Assert.assertEquals(lp.getErrorBubble().
-                        waitUntil(Condition.visible, Integer.parseInt(test.getProperty("explicit_wait_cp"))).getText(),
+        Assert.assertEquals(lp.getErrorBubbleText(Integer.parseInt(test.getProperty("explicit_wait_cp"))),
                 test.getProperty("password_no_correct"));
     }
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -146,8 +136,8 @@ public class NegativeTest {
     public void userLoginBubbleEmptyEmail() {
         open("/");
         LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
-        lp.getSignInButton().click();
-        Assert.assertEquals(lp.getErrorBubble().shouldBe(Condition.visible).getText(), test.getProperty("email"));
+        lp.clickSignInButton();
+        Assert.assertEquals(lp.getErrorBubbleText(), test.getProperty("email"));
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -155,11 +145,11 @@ public class NegativeTest {
     public void userLoginBrowserRefresh() {
         open("/");
         LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
-        lp.getEmailField().setValue(test.getProperty("account_exist_email"));
-        lp.getPasswordField().setValue(test.getProperty("account_exist_password"));
+        lp.setEmail(test.getProperty("account_exist_email"));
+        lp.setPassword(test.getProperty("account_exist_password"));
         refresh();
-        lp.getSignInButton().click();
-        Assert.assertEquals(lp.getErrorBubble().shouldBe(Condition.visible).getText(), test.getProperty("email"));
+        lp.clickSignInButton();
+        Assert.assertEquals(lp.getErrorBubbleText(), test.getProperty("email"));
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -198,11 +188,11 @@ public class NegativeTest {
     public void userLoginRestorePasswordBadEmail(String email, String error) {
         open("/");
         LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
-        lp.getForgotPasswordLink().click();
+        lp.clickForgotPasswordLink();
         PasswordResetPage prp = new PasswordResetPage();
-        prp.getField().setValue(email);
-        prp.getButton().click();
-        Assert.assertEquals(lp.getErrorBubble().shouldBe(Condition.visible).getText(), error);
+        prp.setEmail(email);
+        prp.clickResetPasswordButton();
+        Assert.assertEquals(lp.getErrorBubbleText(), error);
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -228,42 +218,37 @@ public class NegativeTest {
             switchTo().window(1);
 
             YandexLoginPage yandexLogin = new YandexLoginPage(Integer.parseInt(test.getProperty("explicit_wait_yandex")));
-            yandexLogin.getLoginInput().setValue(test.getProperty("login_yandex"));
-            yandexLogin.getPasswordInput().setValue(test.getProperty("password_yandex"));
-            yandexLogin.getLoginButton().click();
+            yandexLogin.loginToYandex(test.getProperty("login_yandex"), test.getProperty("password_yandex"));
 
-            YandexLitePage yandex = new YandexLitePage(Integer.parseInt(test.getProperty("explicit_wait_yandex")));
+            YandexLiteMailPage yandex = new YandexLiteMailPage(Integer.parseInt(test.getProperty("explicit_wait_yandex")));
             //если есть что удалить удалим, если нет пойдем дальше
-            if (yandex.getSelectAllCheckbox().exists() == true) {
-                yandex.getSelectAllCheckbox().click();
-                yandex.getDeleteButton().click();
+            if (yandex.existsSelectAllCheckbox() == true) {
+                yandex.clickSelectAllCheckbox();
+                yandex.clickDeleteButton();
             }
 
             switchTo().window(0);
-            lp.getForgotPasswordLink().click();
+            lp.clickForgotPasswordLink();
 
             PasswordResetPage prp = new PasswordResetPage();
-            prp.getField().setValue(test.getProperty("account_exist_email_yandex"));
-            prp.getButton().click();
+            prp.setEmail(test.getProperty("account_exist_email_yandex"));
+            prp.clickResetPasswordButton();
             switchTo().window(1);
 
-            yandex.sleepRefresh(Integer.parseInt(test.getProperty("number_retry_yandex")),
-                    1000,
-                    yandex.getResetPasswordEmail(test.getProperty("find_email_text")));
-
-            yandex.getResetPasswordEmail(test.getProperty("find_email_text")).click();
-            String restore = yandex.getPasswordRecoveryLink().getText();
-            yandex.logout().click();
+            yandex.waitEmail(Integer.parseInt(test.getProperty("number_retry_yandex")),1000);
+            yandex.clickResetPasswordEmail();
+            String restore = yandex.getPasswordRecoveryLinkText();
+            yandex.logout();
 
             executeJavaScript("window.close();");
             switchTo().window(0);
             open(restore);
 
             ChangePasswordPage cpp = new ChangePasswordPage();
-            cpp.getField().setValue(password);
-            cpp.getButton().click();
+            cpp.setNewPassword(password);
+            cpp.clickChangePasswordButton();
 
-            Assert.assertEquals(lp.getErrorBubble().shouldBe(Condition.visible).getText(), error);
+            Assert.assertEquals(lp.getErrorBubbleText(), error);
         } finally {
             close();
         }

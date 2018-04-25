@@ -1,7 +1,6 @@
 package ru.page.login;
 
 import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Selenide.$;
@@ -12,43 +11,87 @@ import static com.codeborne.selenide.Selenide.$;
 
 public class LoginPage {
 
-    // TODO так вроде бы получше
-    public static final String FOCUS = "//div[@class='field field--large field--focus']";
+    By focusLocator = By.xpath("//div[@class='field field--large field--focus']");
+    By loginPageLocator = By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']");
+    By emailLocator = By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']");
+    By passwordLocator = By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']" +
+            "//input[@name='password']");
+    By signInButtonLocator = By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button");
+    By bubbleNotitleLocator = By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']" +
+            "//div[@class='gwt-HTML']");
+    By keepMeSignedInLocator = By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//span[@class='gwt-CheckBox']");
+    By forgotPasswordLinkLocator = By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']" +
+            "//p[1]//a[1]");
 
-    SelenideElement anchor;
-
-    public LoginPage(int sleep){
-        anchor = $(By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']")).waitUntil(Condition.visible, sleep);
+    public LoginPage(int sleep) {
+        $(loginPageLocator).waitUntil(Condition.visible, sleep);
     }
 
-    public SelenideElement getAnchor() {
-        return anchor;
+    public void setEmail(String email) {
+        $(emailLocator).setValue(email);
     }
 
-    public SelenideElement getEmailField() {
-        return     $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']"));
+    public void sendKeysEmail(CharSequence key) {
+        $(emailLocator).sendKeys(key);
     }
 
-    public SelenideElement getPasswordField() {
-        return     $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='password']"));
+    public boolean existsFocusEmail() {
+        return $(emailLocator).find(focusLocator).exists();
     }
 
-    public SelenideElement getSignInButton() {
-        return     $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button"));
+    public void setPassword(String password) {
+        $(passwordLocator).setValue(password);
     }
 
-    public SelenideElement getErrorBubble() {
-        return     $(By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']//div[@class='gwt-HTML']"));
+    @Deprecated
+    public void sendKeysPassword(CharSequence key) {
+        $(passwordLocator).sendKeys(key);
     }
 
-    public SelenideElement getSignedInCheckbox() {
-        return     $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//span[@class='gwt-CheckBox']"));
+    public boolean existsFocusPassword() {
+        return $(passwordLocator).find(focusLocator).exists();
     }
 
-    public SelenideElement getForgotPasswordLink() {
-        return     $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//p[1]//a[1]"));
+    public void clickSignInButton() {
+        $(signInButtonLocator).click();
     }
 
+    public void sendKeysSignInButton(CharSequence key) {
+        $(signInButtonLocator).sendKeys(key);
+    }
+
+    @Deprecated
+    public boolean existsFocusSignInButton() {
+        return $(signInButtonLocator).find(focusLocator).exists();
+    }
+
+    public boolean existsErrorBubble() {
+        return $(bubbleNotitleLocator).exists();
+    }
+
+    public String getErrorBubbleText() {
+
+        return $(bubbleNotitleLocator).shouldBe(Condition.visible).getText();
+    }
+
+    public String getErrorBubbleText(int sleep) {
+
+        return $(bubbleNotitleLocator).waitUntil(Condition.visible, sleep).getText();
+    }
+
+    public void clickKeepMeSignedInCheckbox() {
+        $(keepMeSignedInLocator).click();
+    }
+
+    public void clickForgotPasswordLink() {
+        $(forgotPasswordLinkLocator).click();
+    }
+
+    public void loginToEcwid(String email, String password) {
+        this.setEmail(email);
+        this.setPassword(password);
+        this.clickSignInButton();
+    }
 }
 
 

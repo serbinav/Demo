@@ -1,10 +1,8 @@
 package ru.test.autotest;
 
-import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
-import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -14,7 +12,7 @@ import ru.page.controlpanel.ControlPanelPage;
 import ru.page.login.ChangePasswordPage;
 import ru.page.login.LoginPage;
 import ru.page.login.PasswordResetPage;
-import ru.page.yandex.YandexLitePage;
+import ru.page.yandex.YandexLiteMailPage;
 import ru.page.yandex.YandexLoginPage;
 import ru.utils.PropertiesStream;
 import ru.utils.TestUtils;
@@ -83,9 +81,7 @@ public class PositiveTest {
     public void userLogin(String email, String password, boolean bool) {
         open("/");
         LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
-        lp.getEmailField().val(email);
-        lp.getPasswordField().val(password);
-        lp.getSignInButton().click();
+        lp.loginToEcwid(email,password);
 
         ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
 
@@ -94,10 +90,7 @@ public class PositiveTest {
         StringBuilder deleteUrl = new StringBuilder(parts[0] + "#profile");
         open(deleteUrl.toString());
 
-        cp.getProfilePage().shouldBe(Condition.visible);
-        ;
-        Assert.assertEquals(
-                cp.getUserDataCollection().findBy(Condition.value(email)).exists(), bool);
+        Assert.assertEquals(cp.findEmail(email), bool);
         cp.logout();
     }
 
@@ -106,9 +99,8 @@ public class PositiveTest {
     public void userLoginBorder() {
         open("/");
         LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
-        SelenideElement focusFirst = lp.getEmailField();
-        focusFirst.click();
-        Assert.assertEquals(focusFirst.find(By.xpath(lp.FOCUS)).exists(), true);
+        lp.sendKeysEmail(Keys.ENTER);
+        Assert.assertEquals(lp.existsFocusEmail(), true);
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -117,8 +109,8 @@ public class PositiveTest {
     public void userLoginBubbleTab() {
         open("/");
         LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
-        lp.getEmailField().pressTab();
-        Assert.assertEquals(lp.getPasswordField().find(By.xpath(lp.FOCUS)).exists(), true);
+        lp.sendKeysEmail(Keys.TAB);
+        Assert.assertEquals(lp.existsFocusPassword(), true);
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -126,9 +118,7 @@ public class PositiveTest {
     public void userLoginBrowserNewWindow() {
         open("/");
         LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
-        lp.getEmailField().val(test.getProperty("account_exist_email"));
-        lp.getPasswordField().val(test.getProperty("account_exist_password"));
-        lp.getSignInButton().click();
+        lp.loginToEcwid(test.getProperty("account_exist_email"),test.getProperty("account_exist_password"));
 
         new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
         executeJavaScript("window.open('" + WebDriverRunner.url() + "','/');");
@@ -136,7 +126,7 @@ public class PositiveTest {
 
         try {
             ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
-            Assert.assertEquals(cp.getAnchor().shouldBe(Condition.visible).exists(), true);
+            Assert.assertEquals(cp.existsControlPanel(), true);
         } finally {
             executeJavaScript("window.close();");
             switchTo().window(0);
@@ -147,45 +137,42 @@ public class PositiveTest {
     public void userLoginBrowserBack() {
         open("/");
         LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
-        lp.getEmailField().val(test.getProperty("account_exist_email"));
-        lp.getPasswordField().val(test.getProperty("account_exist_password"));
-        lp.getSignInButton().click();
+        lp.loginToEcwid(test.getProperty("account_exist_email"),test.getProperty("account_exist_password"));
+
         ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
         back();
-        Assert.assertEquals(cp.getAnchor().shouldBe(Condition.visible).exists(), true);
+        Assert.assertEquals(cp.existsControlPanel(), true);
     }
 
     @Test
     public void userLoginSeveralAttemptsIncorrectly() {
         open("/");
         LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
-        lp.getEmailField().setValue(test.getProperty("account_exist_email"));
-        lp.getPasswordField().setValue(utils.generateRandomString(Integer.parseInt(test.getProperty("password_random_lenght"))));
+        lp.setEmail(test.getProperty("account_exist_email"));
+        lp.setPassword(utils.generateRandomString(Integer.parseInt(test.getProperty("password_random_lenght"))));
 
         for (Integer i = 0; i < Integer.parseInt(test.getProperty("number_attempts_incorrectly_login")); i++) {
-            lp.getSignInButton().click();
-            // убрал проверку на ошибку в bubble  test.getProperty("password_no_correct"));
-            // она тут не главная
-            lp.getErrorBubble().waitUntil(Condition.visible, 5000);
+            lp.clickSignInButton();
+             //убрал проверку на ошибку в bubble  test.getProperty("password_no_correct"));
+             //она тут не главная
+            lp.getErrorBubbleText(Integer.parseInt(test.getProperty("explicit_wait_cp")));
         }
-        lp.getPasswordField().setValue(test.getProperty("account_exist_password"));
-        lp.getSignInButton().click();
+        lp.setPassword(test.getProperty("account_exist_password"));
+        lp.clickSignInButton();
 
         ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
-        Assert.assertEquals(cp.getAnchor().shouldBe(Condition.visible).exists(), true);
+        Assert.assertEquals(cp.existsControlPanel(), true);
     }
 
     @Test
     public void userLoginKeepSignedIn() {
         open("/");
         LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
-        lp.getEmailField().val(test.getProperty("account_exist_email"));
-        lp.getPasswordField().val(test.getProperty("account_exist_password"));
-        lp.getSignedInCheckbox().click();
-        lp.getSignInButton().click();
+        lp.clickKeepMeSignedInCheckbox();
+        lp.loginToEcwid(test.getProperty("account_exist_email"),test.getProperty("account_exist_password"));
 
         ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
-        Assert.assertEquals(cp.getAnchor().shouldBe(Condition.visible).exists(), true);
+        Assert.assertEquals(cp.existsControlPanel(), true);
     }
 
     @Test
@@ -198,42 +185,37 @@ public class PositiveTest {
             switchTo().window(1);
 
             YandexLoginPage yandexLogin = new YandexLoginPage(Integer.parseInt(test.getProperty("explicit_wait_yandex")));
-            yandexLogin.getLoginInput().setValue(test.getProperty("login_yandex"));
-            yandexLogin.getPasswordInput().setValue(test.getProperty("password_yandex"));
-            yandexLogin.getLoginButton().click();
+            yandexLogin.loginToYandex(test.getProperty("login_yandex"),test.getProperty("password_yandex"));
 
-            YandexLitePage yandex = new YandexLitePage(Integer.parseInt(test.getProperty("explicit_wait_yandex")));
+            YandexLiteMailPage yandex = new YandexLiteMailPage(Integer.parseInt(test.getProperty("explicit_wait_yandex")));
             //если есть что удалить удалим, если нет пойдем дальше
-            if (yandex.getSelectAllCheckbox().exists() == true) {
-                yandex.getSelectAllCheckbox().click();
-                yandex.getDeleteButton().click();
+            if (yandex.existsSelectAllCheckbox() == true) {
+                yandex.clickSelectAllCheckbox();
+                yandex.clickDeleteButton();
             }
 
             switchTo().window(0);
-            lp.getForgotPasswordLink().click();
+            lp.clickForgotPasswordLink();
 
             PasswordResetPage prp = new PasswordResetPage();
-            prp.getField().setValue(test.getProperty("account_exist_email_yandex"));
-            prp.getButton().click();
+            prp.setEmail(test.getProperty("account_exist_email_yandex"));
+            prp.clickResetPasswordButton();
             switchTo().window(1);
 
-            yandex.sleepRefresh(Integer.parseInt(test.getProperty("number_retry_yandex")),
-                    1000,
-                    yandex.getResetPasswordEmail(test.getProperty("find_email_text")));
-
-            yandex.getResetPasswordEmail(test.getProperty("find_email_text")).click();
-            String restore = yandex.getPasswordRecoveryLink().getText();
+            yandex.waitEmail(Integer.parseInt(test.getProperty("number_retry_yandex")),1000);
+            yandex.clickResetPasswordEmail();
+            String restore = yandex.getPasswordRecoveryLinkText();
 
             executeJavaScript("window.close();");
             switchTo().window(0);
             open(restore);
 
             ChangePasswordPage cpp = new ChangePasswordPage();
-            cpp.getField().setValue(test.getProperty("account_exist_password_yandex"));
-            cpp.getButton().click();
+            cpp.setNewPassword(test.getProperty("account_exist_password_yandex"));
+            cpp.clickChangePasswordButton();
 
             ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
-            Assert.assertEquals(cp.getAnchor().shouldBe(Condition.visible).exists(), true);
+            Assert.assertEquals(cp.existsControlPanel(), true);
         } finally {
             close();
         }

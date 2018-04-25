@@ -1,8 +1,6 @@
 package ru.page.controlpanel;
 
 import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Selenide.$;
@@ -14,29 +12,41 @@ import static com.codeborne.selenide.Selenide.$$;
 
 public class ControlPanelPage {
 
-    SelenideElement anchor;
+    By loadingLocator = By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]");
+    By menuLocator = By.xpath("//div[@class='menu']");
+    By controlPanelPageLocator = By.xpath("//h1[@class='settings-page__title']");
+    By profilePageLocator = By.xpath("//div[@class='ProfileView']//div[@class='Title']" +
+            "//span[@class='gwt-InlineHTML']");
+    By profileDataCollectionLocator = By.xpath("//div[@class='backend-TitledPanel-content']" +
+            "//input[@class='gwt-TextBox']");
+    By multiadminProfileLocator = By.xpath("//a[@class='horizontal-icolink icolink-append']" +
+            "//div[@class='multiadmin-profile']");
+    By signOutLinkLocator = By.xpath("//div[@class='store-profile-footer']//a");
 
     public ControlPanelPage(int sleep) {
-        $(By.xpath("//div[@class='loading-panel' and not(contains(@style,'display: none'))]")).waitUntil(Condition.visible, sleep);
-        $(By.xpath("//div[@class='menu']")).waitUntil(Condition.visible, sleep);
-        anchor = $(By.xpath("//h1[@class='settings-page__title']")).waitUntil(Condition.visible, sleep);
+        $(loadingLocator).waitUntil(Condition.visible, sleep);
+        $(menuLocator).waitUntil(Condition.visible, sleep);
+        $(controlPanelPageLocator).waitUntil(Condition.visible, sleep);
     }
 
-    public SelenideElement getAnchor() {
-        return anchor;
+    public boolean existsControlPanel() {
+        return $(controlPanelPageLocator).shouldBe(Condition.visible).exists();
     }
 
-    public SelenideElement getProfilePage() {
-        return     $(By.xpath("//div[@class='ProfileView']//div[@class='Title']//span[@class='gwt-InlineHTML']"));
+    private boolean existsProfilePage() {
+        return $(profilePageLocator).shouldBe(Condition.visible).exists();
     }
 
-    public ElementsCollection getUserDataCollection() {
-        return     $$(By.xpath("//div[@class='backend-TitledPanel-content']//input[@class='gwt-TextBox']"));
+    public boolean findEmail(String email) {
+        if (this.existsProfilePage() == true) {
+            return $$(profileDataCollectionLocator).findBy(Condition.value(email)).exists();
+        }
+        return false;
     }
 
     public void logout() {
-        $(By.xpath("//a[@class='horizontal-icolink icolink-append']//div[@class='multiadmin-profile']")).click();
-        $(By.xpath("//div[@class='store-profile-footer']//a")).click();
+        $(multiadminProfileLocator).click();
+        $(signOutLinkLocator).click();
     }
 }
 

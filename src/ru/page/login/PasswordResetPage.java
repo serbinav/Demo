@@ -1,25 +1,27 @@
 package ru.page.login;
 
 import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Selenide.$;
 
-public class PasswordResetPage extends DropPassword {
+public class PasswordResetPage {
 
-    public PasswordResetPage(){
-        anchor = $(By.xpath("//div[@class='reset-view block-view-on']//h3//div[@class='gwt-HTML']")).shouldBe(Condition.visible);
+    By passwordResetPageLocator = By.xpath("//div[@class='reset-view block-view-on']//h3//div[@class='gwt-HTML']");
+    By emailFieldLocator = By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_3']" +
+            "//input[@name='email']");
+    By passwordButtonLocator = By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_3']//button");
+
+    public PasswordResetPage() {
+        $(passwordResetPageLocator).shouldBe(Condition.visible);
     }
 
-    //getEmailField
-    public SelenideElement getField() {
-        return     $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_3']//input[@name='email']"));
+    public void setEmail(String email) {
+        $(emailFieldLocator).setValue(email);
     }
 
-    //getResetPasswordButton
-    public SelenideElement getButton() {
-        return     $(By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_3']//button"));
+    public void clickResetPasswordButton() {
+        $(passwordButtonLocator).click();
     }
 
 }

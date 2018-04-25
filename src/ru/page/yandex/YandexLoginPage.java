@@ -1,33 +1,36 @@
 package ru.page.yandex;
 
 import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Selenide.$;
 
 public class YandexLoginPage {
 
-    SelenideElement anchor;
+    By yandexLoginPageLocator = By.xpath("//span[contains(@class,'footer-item__rights')]");
+    By loginLocator = By.xpath("//input[@class='passport-Input-Controller' and @name='login']");
+    By passwordLocator = By.xpath("//input[@class='passport-Input-Controller' and @name='passwd']");
+    By loginButtonLocator = By.xpath("//span[@class='passport-Button-Text']");
 
     public YandexLoginPage(int sleep) {
-        anchor = $(By.xpath("//span[contains(@class,'footer-item__rights')]")).waitUntil(Condition.visible, sleep);
+        $(yandexLoginPageLocator).waitUntil(Condition.visible, sleep);
     }
 
-    public SelenideElement getAnchor() {
-        return anchor;
+    public void setLogin(String userName) {
+        $(loginLocator).setValue(userName);
     }
 
-    public SelenideElement getLoginInput() {
-        return $(By.xpath("//input[@class='passport-Input-Controller' and @name='login']"));
+    public void setPassword(String password) {
+        $(passwordLocator).setValue(password);
     }
 
-    public SelenideElement getPasswordInput() {
-        return $(By.xpath("//input[@class='passport-Input-Controller' and @name='passwd']"));
+    public void clickLoginButton() {
+        $(loginButtonLocator).click();
     }
 
-    public SelenideElement getLoginButton() {
-        return $(By.xpath("//span[@class='passport-Button-Text']"));
+    public void loginToYandex(String userName, String password) {
+        this.setLogin(userName);
+        this.setPassword(password);
+        this.clickLoginButton();
     }
-
 }
