@@ -28,8 +28,6 @@
     </dependencies>
 
     <build>
-        <sourceDirectory>${basedir}/src</sourceDirectory>
-        <testSourceDirectory>${basedir}/test</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -44,6 +42,11 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.18.1</version>
                 <configuration>
+                    <printSummary>true</printSummary>
+                    <includes>
+                        <include>**/*Test.class</include>
+                        <include>**/*test.class</include>
+                    </includes>
                     <suiteXmlFiles>
                         <suiteXmlFile>config/testng.xml</suiteXmlFile>
                     </suiteXmlFiles>

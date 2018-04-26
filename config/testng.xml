@@ -1,21 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suite name="TestAll">
-    <test name="negative">
-        <classes>
-            <class name="ru.autotest.NegativeTest" />
-        </classes>
-    </test>
-
-    <test name="positive">
-        <classes>
-            <class name="ru.autotest.PositiveTest" />
-        </classes>
-    </test>
-
-    <test name="experimental">
-        <classes>
-            <class name="ru.autotest.FirstTestSelenide" />
-        </classes>
+    <test name="negative_positive">
+        <packages>
+            <package name="ru.autotest"/>
+        </packages>
     </test>
 </suite>
 
