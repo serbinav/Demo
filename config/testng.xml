@@ -2,19 +2,20 @@
 <suite name="TestAll">
     <test name="negative">
         <classes>
-            <class name="ru.test.autotest.NegativeTest" />
+            <class name="ru.autotest.NegativeTest" />
         </classes>
     </test>
 
     <test name="positive">
         <classes>
-            <class name="ru.test.autotest.PositiveTest" />
+            <class name="ru.autotest.PositiveTest" />
         </classes>
     </test>
 
     <test name="experimental">
         <classes>
-            <class name="ru.test.autotest.FirstTestSelenide" />
+            <class name="ru.autotest.FirstTestSelenide" />
         </classes>
     </test>
 </suite>
+
