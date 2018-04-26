@@ -89,6 +89,22 @@ public class NegativeTest {
                 {test.getProperty("account_error_email_south_korea"),
                         "",
                         test.getProperty("email")},
+                //case userLoginEmoji
+                {test.getProperty("account_error_email_emoji"),
+                        "",
+                        test.getProperty("email")},
+                //case userLoginBannedSymbol
+                {test.getProperty("account_error_email_banned_character"),
+                        "",
+                        test.getProperty("email")},
+                //case userLoginExtendedLatinAlphabet
+                {test.getProperty("account_exist_email_extended_latin"),
+                        utils.generateRandomString(Integer.parseInt(test.getProperty("password_random_lenght"))),
+                        test.getProperty("no_account")},
+                //case userLoginAccentedChars
+                {test.getProperty("account_error_email_assignee_chars"),
+                        utils.generateRandomString(Integer.parseInt(test.getProperty("password_random_lenght"))),
+                        test.getProperty("no_account")},
         };
     }
 
@@ -118,6 +134,7 @@ public class NegativeTest {
         lp.sendKeysSignInButton(Keys.ENTER);
         Assert.assertEquals(lp.getErrorBubbleText(), test.getProperty("email"));
     }
+
     //-----------------------------------------------------------------------------------------------------------------------------
     // долгое ожидание поэтому не добавил в parseEmailPasswordData
     @Test
@@ -235,7 +252,8 @@ public class NegativeTest {
             prp.clickResetPasswordButton();
             switchTo().window(1);
 
-            yandex.waitEmail(Integer.parseInt(test.getProperty("number_retry_yandex")),1000);
+            yandex.waitEmail(Integer.parseInt(test.getProperty("number_retry_yandex")),
+                    Integer.parseInt(test.getProperty("sleep_between_retry_yandex")));
             yandex.clickResetPasswordEmail();
             String restore = yandex.getPasswordRecoveryLinkText();
             yandex.logout();

@@ -51,7 +51,7 @@ public class YandexLiteMailPage {
         for (Integer i = 0; i < countRetry; i++) {
             refresh();
             sleep(sleep);
-            boolean visible = this.existsResetPasswordEmail();
+            boolean visible = existsResetPasswordEmail();
             if (visible == true)
                 return;
         }

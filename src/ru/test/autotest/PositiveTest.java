@@ -70,10 +70,6 @@ public class PositiveTest {
                 {test.getProperty("account_exist_email_cyrillic"),
                         test.getProperty("account_exist_password_cyrillic"),
                         true},
-                //case userLoginAccentedChars
-                {test.getProperty("account_exist_email_accented_chars"),
-                        test.getProperty("account_exist_password_accented_chars"),
-                        true},
         };
     }
 
@@ -202,7 +198,8 @@ public class PositiveTest {
             prp.clickResetPasswordButton();
             switchTo().window(1);
 
-            yandex.waitEmail(Integer.parseInt(test.getProperty("number_retry_yandex")),1000);
+            yandex.waitEmail(Integer.parseInt(test.getProperty("number_retry_yandex")),
+                    Integer.parseInt(test.getProperty("sleep_between_retry_yandex")));
             yandex.clickResetPasswordEmail();
             String restore = yandex.getPasswordRecoveryLinkText();
 
