@@ -1,4 +1,4 @@
-package ru.utils;
+package utils;
 
 import java.io.*;
 import java.util.Properties;

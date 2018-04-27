@@ -1,4 +1,4 @@
-package ru.page.login;
+package page.login;
 
 import com.codeborne.selenide.Condition;
 import org.openqa.selenium.By;

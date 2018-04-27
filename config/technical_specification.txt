@@ -23,6 +23,3 @@
 
 VirtualBox
 Docker
-
-    <packaging>jar</packaging>
-    <name>FirstLoginTest</name>

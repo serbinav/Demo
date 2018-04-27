@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suite name="TestAll">
-    <test name="negative_positive">
-        <packages>
-            <package name="ru.autotest"/>
-        </packages>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="First" verbose="1">
+    <test name="TestOne">
+    <classes>
+        <class name="ru.autotest.PositiveTest" />
+    </classes>
+    </test>
+    <test name="TestTwo">
+        <classes>
+            <class name="ru.autotest.NegativeTest" />
+        </classes>
     </test>
 </suite>
-

@@ -1,4 +1,4 @@
-package ru.page.yandex;
+package page.yandex;
 
 import com.codeborne.selenide.Condition;
 import org.openqa.selenium.By;

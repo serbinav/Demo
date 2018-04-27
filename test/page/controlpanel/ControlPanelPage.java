@@ -1,4 +1,4 @@
-package ru.page.controlpanel;
+package page.controlpanel;
 
 import com.codeborne.selenide.Condition;
 import org.openqa.selenium.By;

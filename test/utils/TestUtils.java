@@ -1,12 +1,6 @@
-package ru.utils;
-
-import org.openqa.selenium.By;
+package utils;
 
 import java.util.Random;
-
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.refresh;
-import static com.codeborne.selenide.Selenide.sleep;
 
 /**
  * Created by makenshi on 4/12/18.
