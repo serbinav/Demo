@@ -27,16 +27,17 @@ import static com.codeborne.selenide.WebDriverRunner.clearBrowserCache;
  */
 public class PositiveTest {
 
+    private static Properties global;
     private static Properties test;
     private static TestUtils utils;
 
     @BeforeClass
     public static void setUp() {
         utils = new TestUtils();
-        Properties prop = new PropertiesStream("config/properties.ini", "UTF-8").getProperties();
+        global = new PropertiesStream("config/properties.ini", "UTF-8").getProperties();
 
-        Configuration.baseUrl = prop.getProperty("site_name");
-        Configuration.browser = prop.getProperty("browser_name");
+        Configuration.baseUrl = global.getProperty("site_name");
+        Configuration.browser = global.getProperty("browser_name");
 
         test = new PropertiesStream("config/test.ini", "UTF-8").getProperties();
     }
@@ -72,10 +73,10 @@ public class PositiveTest {
     @Test(dataProvider = "parseLoginEmailPasswordData")
     public void userLogin(String email, String password, boolean bool) {
         open("/");
-        LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
+        LoginPage lp = new LoginPage(Integer.parseInt(global.getProperty("explicit_wait_lp")));
         lp.loginToEcwid(email,password);
 
-        ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
+        ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(global.getProperty("explicit_wait_cp")));
 
         String url = WebDriverRunner.url();
         String[] parts = url.split("#");
@@ -90,9 +91,9 @@ public class PositiveTest {
     @Test
     public void userLoginBorder() {
         open("/");
-        LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
+        LoginPage lp = new LoginPage(Integer.parseInt(global.getProperty("explicit_wait_lp")));
         lp.sendKeysEmail(Keys.ENTER);
-        Assert.assertEquals(lp.existsFocusEmail(), true);
+        Assert.assertEquals(lp.isFocusEmail(), true);
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -100,25 +101,25 @@ public class PositiveTest {
     @Test
     public void userLoginBubbleTab() {
         open("/");
-        LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
+        LoginPage lp = new LoginPage(Integer.parseInt(global.getProperty("explicit_wait_lp")));
         lp.sendKeysEmail(Keys.TAB);
-        Assert.assertEquals(lp.existsFocusPassword(), true);
+        Assert.assertEquals(lp.isFocusPassword(), true);
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------
     @Test
     public void userLoginBrowserNewWindow() {
         open("/");
-        LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
+        LoginPage lp = new LoginPage(Integer.parseInt(global.getProperty("explicit_wait_lp")));
         lp.loginToEcwid(test.getProperty("account_exist_email"),test.getProperty("account_exist_password"));
 
-        new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
+        new ControlPanelPage(Integer.parseInt(global.getProperty("explicit_wait_cp")));
         executeJavaScript("window.open('" + WebDriverRunner.url() + "','/');");
         switchTo().window(1);
 
         try {
-            ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
-            Assert.assertEquals(cp.existsControlPanel(), true);
+            ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(global.getProperty("explicit_wait_cp")));
+            Assert.assertEquals(cp.isControlPanel(), true);
         } finally {
             executeJavaScript("window.close();");
             switchTo().window(0);
@@ -128,58 +129,58 @@ public class PositiveTest {
     @Test
     public void userLoginBrowserBack() {
         open("/");
-        LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
+        LoginPage lp = new LoginPage(Integer.parseInt(global.getProperty("explicit_wait_lp")));
         lp.loginToEcwid(test.getProperty("account_exist_email"),test.getProperty("account_exist_password"));
 
-        ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
+        ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(global.getProperty("explicit_wait_cp")));
         back();
-        Assert.assertEquals(cp.existsControlPanel(), true);
+        Assert.assertEquals(cp.isControlPanel(), true);
     }
 
     @Test
     public void userLoginSeveralAttemptsIncorrectly() {
         open("/");
-        LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
+        LoginPage lp = new LoginPage(Integer.parseInt(global.getProperty("explicit_wait_lp")));
         lp.setEmail(test.getProperty("account_exist_email"));
         lp.setPassword(utils.generateRandomString(Integer.parseInt(test.getProperty("password_random_lenght"))));
 
-        for (Integer i = 0; i < Integer.parseInt(test.getProperty("number_attempts_incorrectly_login")); i++) {
+        for (Integer i = 0; i < Integer.parseInt(global.getProperty("number_attempts_incorrectly_login")); i++) {
             lp.clickSignInButton();
-            lp.getErrorBubbleText(Integer.parseInt(test.getProperty("explicit_wait_cp")));
+            lp.getErrorBubbleText(Integer.parseInt(global.getProperty("explicit_wait_cp")));
         }
         lp.setPassword(test.getProperty("account_exist_password"));
         lp.clickSignInButton();
 
-        ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
-        Assert.assertEquals(cp.existsControlPanel(), true);
+        ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(global.getProperty("explicit_wait_cp")));
+        Assert.assertEquals(cp.isControlPanel(), true);
     }
 
     @Test
     public void userLoginKeepSignedIn() {
         open("/");
-        LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
+        LoginPage lp = new LoginPage(Integer.parseInt(global.getProperty("explicit_wait_lp")));
         lp.clickKeepMeSignedInCheckbox();
         lp.loginToEcwid(test.getProperty("account_exist_email"),test.getProperty("account_exist_password"));
 
-        ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
-        Assert.assertEquals(cp.existsControlPanel(), true);
+        ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(global.getProperty("explicit_wait_cp")));
+        Assert.assertEquals(cp.isControlPanel(), true);
     }
 
     @Test
     public void userLoginRestorePassword() {
         open("/");
         try {
-            LoginPage lp = new LoginPage(Integer.parseInt(test.getProperty("explicit_wait_lp")));
+            LoginPage lp = new LoginPage(Integer.parseInt(global.getProperty("explicit_wait_lp")));
 
-            executeJavaScript("window.open('" + test.getProperty("url_yandex") + "','/');");
+            executeJavaScript("window.open('" + global.getProperty("url_yandex") + "','/');");
             switchTo().window(1);
 
-            YandexLoginPage yandexLogin = new YandexLoginPage(Integer.parseInt(test.getProperty("explicit_wait_yandex")));
+            YandexLoginPage yandexLogin = new YandexLoginPage(Integer.parseInt(global.getProperty("explicit_wait_yandex")));
             yandexLogin.loginToYandex(test.getProperty("login_yandex"),test.getProperty("password_yandex"));
 
-            YandexLiteMailPage yandex = new YandexLiteMailPage(Integer.parseInt(test.getProperty("explicit_wait_yandex")));
+            YandexLiteMailPage yandex = new YandexLiteMailPage(Integer.parseInt(global.getProperty("explicit_wait_yandex")));
             //если есть что удалить удалим, если нет пойдем дальше
-            if (yandex.existsSelectAllCheckbox() == true) {
+            if (yandex.isSelectAllCheckbox() == true) {
                 yandex.clickSelectAllCheckbox();
                 yandex.clickDeleteButton();
             }
@@ -192,8 +193,8 @@ public class PositiveTest {
             prp.clickResetPasswordButton();
             switchTo().window(1);
 
-            yandex.waitEmail(Integer.parseInt(test.getProperty("number_retry_yandex")),
-                    Integer.parseInt(test.getProperty("sleep_between_retry_yandex")));
+            yandex.waitEmail(Integer.parseInt(global.getProperty("number_retry_yandex")),
+                    Integer.parseInt(global.getProperty("sleep_between_retry_yandex")));
             yandex.clickResetPasswordEmail();
             String restore = yandex.getPasswordRecoveryLinkText();
 
@@ -205,8 +206,8 @@ public class PositiveTest {
             cpp.setNewPassword(test.getProperty("account_exist_password_yandex"));
             cpp.clickChangePasswordButton();
 
-            ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(test.getProperty("explicit_wait_cp")));
-            Assert.assertEquals(cp.existsControlPanel(), true);
+            ControlPanelPage cp = new ControlPanelPage(Integer.parseInt(global.getProperty("explicit_wait_cp")));
+            Assert.assertEquals(cp.isControlPanel(), true);
         } finally {
             close();
         }

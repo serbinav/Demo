@@ -7,14 +7,15 @@ import static com.codeborne.selenide.Selenide.$;
 
 public class YandexLoginPage {
 
-    By yandexLoginOrLiteLoginPageLocator = By.xpath(
+    //TODO возможно переделать на 2 разных страницы
+    private By yandexLoginOrLiteLoginPageLocator = By.xpath(
             "//span[contains(@class,'footer-item__rights')]|//div[@class='footer-copyright']");
-    By loginLocator = By.xpath("//input[@class='passport-Input-Controller' and @name='login']");
-    By loginLiteLocator = By.xpath("//input[@id='login']");
-    By passwordLocator = By.xpath("//input[@class='passport-Input-Controller' and @name='passwd']");
-    By passwordLiteLocator = By.xpath("//input[@id='passwd']");
-    By loginButtonLocator = By.xpath("//span[@class='passport-Button-Text']");
-    By loginButtonLiteLocator = By.xpath("//button[@type='submit']");
+    private By loginLocator = By.xpath("//input[@class='passport-Input-Controller' and @name='login']");
+    private By loginLiteLocator = By.xpath("//input[@id='login']");
+    private By passwordLocator = By.xpath("//input[@class='passport-Input-Controller' and @name='passwd']");
+    private By passwordLiteLocator = By.xpath("//input[@id='passwd']");
+    private By loginButtonLocator = By.xpath("//span[@class='passport-Button-Text']");
+    private By loginButtonLiteLocator = By.xpath("//button[@type='submit']");
 
     public YandexLoginPage(int sleep) {
         $(yandexLoginOrLiteLoginPageLocator).waitUntil(Condition.visible, sleep);

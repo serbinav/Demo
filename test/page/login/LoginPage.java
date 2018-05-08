@@ -11,18 +11,19 @@ import static com.codeborne.selenide.Selenide.$;
 
 public class LoginPage {
 
-    By focusLocator = By.xpath("//div[@class='field field--large field--focus']");
-    By loginPageLocator = By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']");
-    By emailLocator = By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']");
-    By passwordLocator = By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']" +
+    private By focusLocator = By.xpath("//div[@class='field field--large field--focus']");
+    private By loginPageLocator = By.xpath("//div[@class='block-view-on']//div[@class='gwt-HTML']");
+    private By emailLocator = By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//input[@name='email']");
+    private By passwordLocator = By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']" +
             "//input[@name='password']");
-    By signInButtonLocator = By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button");
-    By bubbleNotitleLocator = By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']" +
+    private By signInButtonLocator = By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//button");
+    private By bubbleNotitleLocator = By.xpath("//div[@class='bubble notitle']//div[@class='bubble-error bubble-left']" +
             "//div[@class='gwt-HTML']");
-    By keepMeSignedInLocator = By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//span[@class='gwt-CheckBox']");
-    By forgotPasswordLinkLocator = By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']" +
+    private By keepMeSignedInLocator = By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']//span[@class='gwt-CheckBox']");
+    private By forgotPasswordLinkLocator = By.xpath("//form[@target='FormPanel_ru.cdev.xnext.myecwidcom.MyEcwidCom_1']" +
             "//p[1]//a[1]");
 
+    //TODO много методов объеденить их в какие-то действия
     public LoginPage(int sleep) {
         $(loginPageLocator).waitUntil(Condition.visible, sleep);
     }
@@ -35,7 +36,7 @@ public class LoginPage {
         $(emailLocator).sendKeys(key);
     }
 
-    public boolean existsFocusEmail() {
+    public boolean isFocusEmail() {
         return $(emailLocator).find(focusLocator).exists();
     }
 
@@ -43,12 +44,7 @@ public class LoginPage {
         $(passwordLocator).setValue(password);
     }
 
-    @Deprecated
-    public void sendKeysPassword(CharSequence key) {
-        $(passwordLocator).sendKeys(key);
-    }
-
-    public boolean existsFocusPassword() {
+    public boolean isFocusPassword() {
         return $(passwordLocator).find(focusLocator).exists();
     }
 
@@ -60,12 +56,7 @@ public class LoginPage {
         $(signInButtonLocator).sendKeys(key);
     }
 
-    @Deprecated
-    public boolean existsFocusSignInButton() {
-        return $(signInButtonLocator).find(focusLocator).exists();
-    }
-
-    public boolean existsErrorBubble() {
+    public boolean isErrorBubble() {
         return $(bubbleNotitleLocator).exists();
     }
 
